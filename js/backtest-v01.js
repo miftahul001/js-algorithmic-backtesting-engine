@@ -1,4 +1,6 @@
-const createBacktestEngine = (initialBalance, feePercent, slippagePoint) => {
+window.abe = window.abe || {}
+
+abe.createBacktestEngine = (initialBalance, feePercent, slippagePoint) => {
 	const engine = {
 		balance: initialBalance,
 		equity: initialBalance,
@@ -134,24 +136,4 @@ const createBacktestEngine = (initialBalance, feePercent, slippagePoint) => {
 		}
 	};
 	return engine;
-};
-
-/*
-
-const engine = createBacktestEngine(1000, 0.1, 0.5); // Modal 1000, fee 0.1%, slippage 0.5
-
-bar.forEach(candle => {
-    // 1. Update engine dengan harga baru
-    engine.update(candle);
-
-    // 2. Contoh Logika Entry berdasarkan Zigzag Anda
-    if (zigzag.state === "UP" && !hasOpenPosition) {
-        engine.sendOrder("BUY", candle.c, candle.t, { tp: candle.c + 500, sl: candle.c - 200 });
-    }
-    
-    zigzag.process(candle);
-});
-
-// 3. Tampilkan hasil di tombol showTrade()
-console.log(engine.getStats()); 
-*/
+}

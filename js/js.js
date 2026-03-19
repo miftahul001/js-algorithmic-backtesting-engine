@@ -11,7 +11,7 @@ const newEngine = a => {
 		ct.remove()
 	} }})
 	ct.children[1].remove()
-	ct.children[1].style = ''
+	ct.children[1].style = 'resize:both; overflow:scroll;'
 	const iframe = el({a:'iframe', b:ct.children[1]})
 	ct.remove()
 	
@@ -75,18 +75,34 @@ const createPage = a =>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="js/echarts.min.js"></script>
 <script src="js/chartOption-v01.js"></script>
+<script src="js/dataLoader.js"></script>
 <script src="js/series-v01.js"></script>
 <script src="js/backtest-v01.js"></script>
 <script src="js/trade-result.js"></script>
 <script>`
 + a +
-`addEventListener('load', a => {
-	onInit()
-		onTick()
-	//const data = loadData()
-	//data.forEach(candle => {
-	//	onTick(candle)
-	//})
+`addEventListener('load', async () => {
+	//setTimeout(async()=>{
+		console.log(abe)
+		// abe = Algorithmic Backtesting Engine
+		abe.chart1 = echarts.init(document.getElementById('chart1'), 'dark')
+		abe.xAxis = []
+		abe.candle = []
+		
+		onInit()
+		
+		const data = await abe.loadData()
+		data.forEach(candle => {
+			abe.xAxis.push(new Date(candle.t).toISOString())
+			abe.candle.push([candle.o, candle.c, candle.l, candle.h])
+			onTick(candle)
+		})
+		abe.chart1.setOption(abe.createChartOption(abe.xAxis, [
+			abe.createCandlestick(abe.candle),
+			//abe.createLine('H1', a.h1, 0, '#6a5acd', 1, 1), //(name, data, yAxisIndex, color, opacity, width)
+			//abe.createLine('L1', a.l1, 0, '#6a5acd', 1, 1),
+		]))
+	//}, 1000)
 })
 
 </script>

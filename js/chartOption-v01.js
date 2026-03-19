@@ -1,4 +1,6 @@
-const createChartOption = (xAxis, series) => ({
+window.abe = window.abe || {}
+
+abe.createChartOption = (xAxis, series) => ({
 	animation: false,
 	tooltip: {
 		trigger: 'axis',

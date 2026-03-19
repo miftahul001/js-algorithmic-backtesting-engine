@@ -1,4 +1,6 @@
-const showTrade = trade => {
+window.abe = window.abe || {}
+
+abe.showTrade = trade => {
 	let a = document.getElementById('trade-panel')
 	if (!a) {
 		a = el({a:'div', b:document.body, d:{id:'trade-panel', style:'background:rgba(255,255,255,0.5); border-radius:7px; box-shadow:0 0 11px 3px rgba(0,0,0,0.1); position:fixed; top:55px; left:55px; margin:0; padding:9px;'} })

@@ -1,4 +1,6 @@
-const createCandlestick = (data, markLine, markPoint) =>(
+window.abe = window.abe || {}
+
+abe.createCandlestick = (data, markLine, markPoint) =>(
 	{ // Candlestick Series
 		type: 'candlestick',
 		data: data,
@@ -21,7 +23,7 @@ const createCandlestick = (data, markLine, markPoint) =>(
 	}
 )
 
-const createLine = (name, data, yAxisIndex, color, opacity, width) =>(
+abe.createLine = (name, data, yAxisIndex, color, opacity, width) =>(
 	{
 		name: name,
 		type: 'line',
@@ -37,7 +39,7 @@ const createLine = (name, data, yAxisIndex, color, opacity, width) =>(
 	}
 )
 
-const createScatter = (name, data, symbol, color, borderColor) =>(
+abe.createScatter = (name, data, symbol, color, borderColor) =>(
 	{
 		name: name,
 		type: 'scatter',
@@ -58,7 +60,7 @@ const createScatter = (name, data, symbol, color, borderColor) =>(
 )
 
 //const createFloatingBar = (barBaseData, barSpanData) => (
-const createBarBaseData = barBaseData => (
+abe.createBarBaseData = barBaseData => (
 	// --- Series Grafik Bawah (Floating Bar) ---
 	{
 		name: 'Base Bar (Hidden)',
@@ -71,7 +73,7 @@ const createBarBaseData = barBaseData => (
 	}
 )
 
-const createBarSpanData = barSpanData => (
+abe.createBarSpanData = barSpanData => (
 	{
 		name: 'Grid Active Span',
 		type: 'bar',
@@ -86,7 +88,7 @@ const createBarSpanData = barSpanData => (
 	}
 )
 
-const getGridIndex = (price, resistance, support, gridSize) => {
+abe.getGridIndex = (price, resistance, support, gridSize) => {
 	if (price < support) return 1
 	if (price >= resistance) return 12
 	return Math.floor((price - support) / gridSize) + 2
