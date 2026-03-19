@@ -1,0 +1,70 @@
+body {
+	font-family: Arial, Helvetica, Tahoma, Verdana, sans-serif;
+	font-size: 12px;
+}
+table { border-collapse: collapse; }
+table, th, td {
+	border: 1px solid #bbb;
+	padding: 3px 7px;
+}
+tr > td {
+	border-radius: 7px;
+	text-align: right;
+}
+thead > tr {
+	position: sticky;
+	top: 1px;
+}
+tr > th {
+	background: #515151;
+	color: #f1f1f1;
+}
+tr > th > div { cursor: pointer; }
+tr > th > div {
+	display: flex;
+	gap: 5px;
+	justify-content: space-between;
+	pointer-events: none;
+}
+
+tbody > tr.trade1 td {
+	pointer-events: none;
+}
+tbody > tr.active1 {
+	background: #e1e1e1;
+}
+
+.panel1 {
+	background: rgba(255,255,255,0.5);
+	border-radius: 5px;
+	box-shadow: 0 0 9px 3px rgba(0,0,0,0.1);
+	margin: 0;
+	padding: 5px;
+	position: fixed;
+	top: 33px;
+	left: 33px;
+}
+.panel1Title {
+	align-items: center;
+	background: rgba(0,0,0,0.75);
+	border-radius: 5px 5px 0 0;
+	color: white;
+	cursor: default;
+	display: flex;
+	font-size: 15px;
+	gap: 9px;
+	padding: 5px;
+	text-align: center;
+}
+.panel1Title > strong { flex: 1 1 auto; }
+.panel1ct {
+	background: white;
+	border-radius: 0 0 5px 5px;
+	margin-top: 5px;
+	max-width: 95vw;
+	max-height: 90vh;
+	min-width: 500px;
+	min-height: 300px;
+	overflow: scroll;
+	resize: both;
+}
