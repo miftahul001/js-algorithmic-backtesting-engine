@@ -11,7 +11,7 @@ const newEngine = a => {
 		ct.remove()
 	} }})
 	ct.children[1].remove()
-	ct.children[1].style = 'resize:both; overflow:scroll;'
+	ct.children[1].style = 'resize:both; overflow:scroll; width:70vw; height:70vh;'
 	const iframe = el({a:'iframe', b:ct.children[1]})
 	ct.remove()
 	
@@ -50,22 +50,33 @@ const newEngine = a => {
 	text.value = 
 `
 function onInit() {
+	userData.maPeriod = 14
+	userData.maBuffer = []
+	userData.maSum = 0
+	userData.maLine = []
+	
 	console.log('a')
-	// do with userData
-	// ex create array for line, scatter, markPoint, markLine
-	// userData.line1 = []
-	// abe.createBacktestEngine()
+	abe.addChart({
+		name: 'Moving Average',
+		type: 'line',
+		data: userData.maLine,
+	})
+	
 }
 
 function onTick(candle) {
+	
 	console.log('b')
-	// do with userData
-	// userData.line1.push()
-	//
-	// abe.backtestEngine.sendOrder("SELL", candle.c, candle.t, params)
-	// abe.backtestEngine.closeOrder
-	// 
-	// fill userData, ex line, scatter, markPoint, markLine
+	userData.maBuffer.push(candle.c)
+	userData.maSum += candle.c
+	if (userData.maBuffer.length === userData.maPeriod) {
+		userData.maLine.push(userData.maSum / userData.maPeriod)
+		userData.maSum -= userData.maBuffer.shift()
+		
+	} else {
+		userData.maLine.push(null)
+	}
+	
 }
 `
 	const codemirror = CodeMirror.fromTextArea(text, {lineNumbers: true, mode: 'javascript', })
@@ -84,40 +95,57 @@ const createPage = a =>
 <script src="js/echarts.min.js"></script>
 <script src="js/chartOption-v01.js"></script>
 <script src="js/dataLoader.js"></script>
-<script src="js/series-v01.js"></script>
 <script src="js/backtest-v01.js"></script>
 <script src="js/trade-result.js"></script>
-<script>`
+<script>
+const userData = {}
+`
 + a +
-`addEventListener('load', async () => {
+`
+addEventListener('load', async () => {
 	//setTimeout(async()=>{
-		console.log(abe)
 		// abe = Algorithmic Backtesting Engine
 		abe.chart1 = echarts.init(document.getElementById('chart1'), 'dark')
-		abe.xAxis = []
+		const xAxis = []
 		abe.candle = []
 		abe.trade = []
 		
-		const userData = {}
+		abe.addChart({
+			type: 'candlestick',
+			data: abe.candle,
+			zlevel: 1,
+			xAxisIndex: 0,
+			yAxisIndex: 0,
+			itemStyle: {
+				color: '#51ff51',//upColor,
+				color0: '#ff5151',//downColor,
+				borderColor: '#51ff51',//upBorderColor,
+				borderColor0: '#ff5151',//downBorderColor
+				opacity: 0.5,
+			},
+			markLine: {
+				data: []
+			},
+			markPoint: {
+				data: []
+			},
+		})
+		
 		onInit()
 		
 		const data = await abe.loadData()
 		data.forEach(candle => {
-			abe.xAxis.push(new Date(candle.t).toISOString())
+			xAxis.push(new Date(candle.t).toISOString())
 			abe.candle.push([candle.o, candle.c, candle.l, candle.h])
 			onTick(candle)
 		})
-		abe.chart1.setOption(abe.createChartOption(abe.xAxis, [
-			abe.createCandlestick(abe.candle),
-			// call user data
-			//abe.createLine('H1', a.h1, 0, '#6a5acd', 1, 1), //(name, data, yAxisIndex, color, opacity, width)
-			//abe.createLine('L1', a.l1, 0, '#6a5acd', 1, 1),
-		]))
+		abe.genChartSeries(xAxis)
+		
 	//}, 1000)
 })
 
 </script>
 </head><body>
-<div id="chart1" style="width:1700px; height:800px;"></div>
+<div id="chart1" style="width:95vw; height:95vh;"></div>
 </body>
 </html>`

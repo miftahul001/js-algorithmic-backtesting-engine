@@ -1,6 +1,4 @@
-window.abe = window.abe || {}
-
-abe.createChartOption = (xAxis, series) => ({
+const createChartOption = (xAxis, series) => ({
 	animation: false,
 	tooltip: {
 		trigger: 'axis',
@@ -68,3 +66,37 @@ abe.createChartOption = (xAxis, series) => ({
 	],
 	series: series,
 })
+
+window.abe = window.abe || {}
+abe.chartSeries = []
+
+abe.addChart = data => {
+	console.log('c')
+	abe.chartSeries.push(data)
+}
+
+abe.genChartSeries = xAxis => {
+	console.log('d')
+	const series = []
+	series.push(...abe.chartSeries.filter(s => s.type === 'candlestick'))
+	
+	series[0].markLine = series[0].markLine || { data: []}
+	abe.chartSeries.filter(s => s.type === 'markLine').forEach(markLine => {
+		series[0].markLine.data.push(...markLine)
+	})
+	
+	series[0].markPoint = series[0].markPoint || { data: []}
+	abe.chartSeries.filter(s => s.type === 'markPoint').forEach(markPoint => {
+		series[0].markPoint.data.push(...markPoint)
+	})
+	
+	abe.chartSeries.filter(s => s.type === 'line').forEach(line => {
+		series.push(line)
+	})
+	
+	abe.chartSeries.filter(s => s.type === 'scatter').forEach(scatter => {
+		series.push(scatter)
+	})
+	
+	abe.chart1.setOption(createChartOption(xAxis, series))
+}
