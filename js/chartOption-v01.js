@@ -71,12 +71,10 @@ window.abe = window.abe || {}
 abe.chartSeries = []
 
 abe.addChart = data => {
-	console.log('c')
 	abe.chartSeries.push(data)
 }
 
 abe.genChartSeries = xAxis => {
-	console.log('d')
 	const series = []
 	series.push(...abe.chartSeries.filter(s => s.type === 'candlestick'))
 	

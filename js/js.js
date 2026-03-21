@@ -55,7 +55,6 @@ function onInit() {
 	userData.maSum = 0
 	userData.maLine = []
 	
-	console.log('a')
 	abe.addChart({
 		name: 'Moving Average',
 		type: 'line',
@@ -65,8 +64,6 @@ function onInit() {
 }
 
 function onTick(candle) {
-	
-	console.log('b')
 	userData.maBuffer.push(candle.c)
 	userData.maSum += candle.c
 	if (userData.maBuffer.length === userData.maPeriod) {
