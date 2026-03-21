@@ -1,61 +1,130 @@
 # JS Algorithmic Backtesting Engine
 
-A high-fidelity, modular backtesting framework built with **Node.js** for simulating and validating cryptocurrency trading strategies. This engine is designed for quantitative researchers and developers who require granular control over historical data simulation and technical indicator logic.
+A browser-based, event-driven backtesting framework for simulating and validating cryptocurrency trading strategies. Write your strategy in JavaScript — the engine handles simulation, fee calculation, slippage, and charting.
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-blue)](https://miftahul001.github.io/js-algorithmic-backtesting-engine/)
+[![Documentation](https://img.shields.io/badge/Docs-DOCUMENTATION.md-green)](https://github.com/miftahul001/js-algorithmic-backtesting-engine/blob/main/DOCUMENTATION.md)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+
+---
+
+![Preview](https://github.com/miftahul001/js-algorithmic-backtesting-engine/blob/main/preview.png?raw=true)
+
+---
 
 ## 🚀 Key Features
 
-* **Multi-Timeframe Support:** Optimized handling of D1, H1, and M30 data structures for precise strategy evaluation.
-* **Event-Driven Logic:** Built to mimic real-world market execution with minimal latency in simulation.
-* **Custom Indicator Suite:** Native implementation of complex indicators including **ATR**, **Zigzag**, and custom trend-following algorithms without relying on heavy external libraries.
-* **Local Data Feed:** Efficient JSON-based data management to bypass API rate limits during intensive backtesting sessions.
-* **Binance Integration:** Includes a specialized utility script to fetch and synchronize historical kline (candlestick) data directly from the Binance API to local storage.
+- **Event-Driven Execution** — Strategies run candle-by-candle, mirroring real-world market flow
+- **Fee & Slippage Simulation** — Entry and exit fees calculated per-trade; configurable slippage per order
+- **TP / SL Auto-Management** — Engine monitors open positions and closes them automatically when Take Profit or Stop Loss is hit
+- **Custom Indicator Support** — No external indicator libraries required; build ATR, Zigzag, MA, or any custom logic natively in JavaScript
+- **ECharts Visualization** — Results rendered as interactive candlestick charts with overlay indicators (line, scatter, markLine, markPoint)
+- **Multi-Timeframe Data** — Local JSON data feed supports D1, H1, M30 structures; no API rate limits during backtesting
+- **In-Browser Code Editor** — Powered by CodeMirror with JavaScript syntax highlighting; no build step required
+- **Sandboxed Execution** — Strategy code runs inside an `<iframe>`, keeping the main UI safe from runtime errors
+
+---
+
+## 📋 Quick Start
+
+No installation required. This is a fully static browser application.
+
+```bash
+git clone https://github.com/miftahul001/js-algorithmic-backtesting-engine.git
+cd js-algorithmic-backtesting-engine
+
+# Serve with any static file server
+npx serve .
+```
+
+Open `http://localhost:3000` in your browser, click **New**, write your strategy, click **Run**.
+
+> ⚠️ Do not open `index.html` directly via `file://` — candle data is loaded via `fetch()` which requires a server.
+
+---
+
+## ✍️ Writing a Strategy
+
+Every strategy implements two functions:
+
+```javascript
+function onInit() {
+    // Called once before the first candle.
+    // Initialize the backtest engine, buffers, and chart series here.
+    abe.createBacktestEngine(1000, 0.05, 0.5) // balance, feePercent, slippagePoint
+}
+
+function onTick(candle) {
+    // Called once per candle: { t, o, h, l, c, v }
+    // Place indicator logic and order management here.
+}
+```
+
+A persistent `userData` object is available for storing state between ticks.
+
+---
+
+## 🔌 Core API
+
+| Method | Description |
+|--------|-------------|
+| `abe.createBacktestEngine(balance, fee, slippage)` | Initialize the simulation engine |
+| `abe.backtestEngine.sendOrder(side, price, time, params)` | Open a BUY or SELL position |
+| `abe.backtestEngine.modifyOrder({ id, newTp, newSl })` | Update TP/SL on an open position (trailing stop) |
+| `abe.backtestEngine.closeOrder(id, price, time)` | Manually close a position |
+| `abe.backtestEngine.getStats()` | Get final balance, win rate, and trade history |
+| `abe.addChart(echartsSeriesParams)` | Register a chart series (line, scatter, markLine, markPoint) |
+| `abe.showTrade()` | Open a floating trade log panel |
+
+📖 **Full API reference, parameter tables, and examples:** [DOCUMENTATION.md](https://github.com/miftahul001/js-algorithmic-backtesting-engine/blob/main/DOCUMENTATION.md)
+
+---
 
 ## 📊 Data Architecture
 
-The engine utilizes a structured local filesystem to manage historical kline data, ensuring fast I/O operations and easy scalability:
+Historical kline data is stored locally as JSON, structured by timeframe:
 
-```text
-|- Data/
-|   |-- D1/    # Daily klines (~1000 klines per file)
-|   |   |--- 2023-01-01-to-2025-xx-xx.json
-|   |   |--- 2025-xx-xx-to-2026-xx-xx.json (current)
-|   |-- H1/    # Hourly klines
-|   |   |--- 2025-01-01-to-2025-02-xx.json
-|   |   |--- 2025-02-xx-to-2025-03-xx.json
-|   |-- M30/   # 30-minute klines
-|   |   |--- 2025-01-01-to-2025-xx-xx.json
-|   |   |--- 2025-xx-xx-to-2025-xx-xx.json
 ```
+data/
+├── D1/
+│   └── 2023-01-01.json      # Daily klines
+├── H1/
+│   └── 2025-01-01.json      # Hourly klines
+└── 30m/
+    └── 2025-01-01.json      # 30-minute klines (default)
+```
+
+Each candle object follows the Binance kline format:
+
+```json
+{ "t": 1735689600000, "o": 94821.5, "h": 95100.0, "l": 94600.3, "c": 94980.2, "v": 123.456 }
+```
+
+---
 
 ## 🛠️ Technology Stack
 
-* **Runtime:** Node.js (ES6+ JavaScript)
-* **Data Format:** JSON (Serialized Kline/Candlestick Data)
-* **Visualization (Optional):** Integrated with ECharts.js for performance dashboards
-* **APIs:** Binance API for data acquisition
+| Layer | Technology |
+|-------|-----------|
+| Runtime | Vanilla JavaScript (ES6+), Browser |
+| Chart | [ECharts.js](https://echarts.apache.org/) |
+| Code Editor | [CodeMirror](https://codemirror.net/) |
+| DOM Utility | [m.js](https://github.com/miftahul001/m) — personal helper library |
+| Data Format | JSON (Binance kline format) |
+| Deployment | GitHub Pages (static, no backend) |
 
-## 📥 Getting Started
+---
 
-### 1. Prerequisites
-* Node.js installed on your local machine.
-* Standard API access (Binance) if fetching new historical data.
+## 🧠 Technical Vision
 
-### 2. Data Acquisition
-This repository includes a script to download historical data directly to your local `/Data` directory. This ensures the backtesting engine has a consistent data feed without constant network dependency.
+This project serves as the simulation core of a broader algorithmic trading system, which includes:
 
-```bash
-# Example command to fetch data 
-node scripts/fetch-binance-data.js --symbol BTCUSDT --interval H1
-```
+- A **data pipeline** for fetching and storing historical kline data from Binance
+- A **proprietary indicator suite** — non-repainting Zigzag, dynamic ATR anchored to swing events, and multi-tiered support/resistance levels
+- A future **AI training environment** where autonomous agents learn decision-making from market structure
 
-### 3. Running a Backtest
-Load your strategy and point the engine to the desired JSON data file:
+---
 
-```javascript
-const engine = new BacktestingEngine('./Data/H1/2025-01-01-to-2025-02-xx.json');
-engine.run(myCustomStrategy);
-```
+## 📄 License
 
-## 🧠 Technical Vision 
-
-This project also serves as a foundational step for broader explorations into **Cognitive AI Architectures**. The ultimate goal is to evolve this backtesting engine into a robust training environment where AI agents can interact, learn, and develop autonomous decision-making capabilities based on strict epistemological guardrails.
+MIT
