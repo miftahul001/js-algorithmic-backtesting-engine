@@ -1,6 +1,12 @@
 # JS Algorithmic Backtesting Engine
 
-A browser-based, event-driven backtesting framework for simulating and validating cryptocurrency trading strategies. Write your strategy in JavaScript — the engine handles simulation, fee calculation, slippage, and charting.
+A lightweight, browser-based, event-driven backtesting engine designed for **rapid strategy prototyping and validation** in cryptocurrency trading. Write your strategy in JavaScript — the engine handles simulation, fee calculation, slippage, and charting.
+
+This project focuses on **realistic simulation**, **clear visualization**, and **developer flexibility** — allowing you to test trading logic without complex setup.
+
+🔗 Live Demo: https://miftahul001.github.io/js-algorithmic-backtesting-engine/
+📖 Documentation: ./DOCUMENTATION.md
+
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-blue)](https://miftahul001.github.io/js-algorithmic-backtesting-engine/)
 [![Documentation](https://img.shields.io/badge/Docs-DOCUMENTATION.md-green)](https://github.com/miftahul001/js-algorithmic-backtesting-engine/blob/main/DOCUMENTATION.md)
@@ -12,16 +18,45 @@ A browser-based, event-driven backtesting framework for simulating and validatin
 
 ---
 
+## 🎯 Why This Project
+
+Most backtesting tools today are:
+
+* Heavy (Python-based, environment setup required)
+* Not interactive
+* Difficult to customize quickly
+
+This engine is built to solve that:
+
+* ⚡ Run directly in the browser (no installation)
+* 🧠 Focus on logic & simulation, not setup
+* 📊 Immediate visual feedback using charts
+* 🔧 Fully customizable with plain JavaScript
+
+---
+
 ## 🚀 Key Features
 
-- **Event-Driven Execution** — Strategies run candle-by-candle, mirroring real-world market flow
-- **Fee & Slippage Simulation** — Entry and exit fees calculated per-trade; configurable slippage per order
-- **TP / SL Auto-Management** — Engine monitors open positions and closes them automatically when Take Profit or Stop Loss is hit
-- **Custom Indicator Support** — No external indicator libraries required; build ATR, Zigzag, MA, or any custom logic natively in JavaScript
-- **ECharts Visualization** — Results rendered as interactive candlestick charts with overlay indicators (line, scatter, markLine, markPoint)
-- **Multi-Timeframe Data** — Local JSON data feed supports D1, H1, M30 structures; no API rate limits during backtesting
-- **In-Browser Code Editor** — Powered by CodeMirror with JavaScript syntax highlighting; no build step required
-- **Sandboxed Execution** — Strategy code runs inside an `<iframe>`, keeping the main UI safe from runtime errors
+* **Event-Driven Simulation**
+  Strategy runs candle-by-candle, mimicking real market flow
+
+* **Fee & Slippage Modeling**
+  Realistic execution with configurable trading cost
+
+* **TP / SL Automation**
+  Positions are managed automatically by the engine
+
+* **Custom Indicator System**
+  Build any indicator (MA, ATR, Zigzag, etc.) directly in JavaScript
+
+* **Interactive Charting (ECharts)**
+  Candlestick + overlay indicators (line, scatter, markPoint, etc.)
+
+* **In-Browser Strategy Editor**
+  Write and test strategies instantly (CodeMirror powered)
+
+* **Sandboxed Execution**
+  Strategy runs safely inside an iframe
 
 ---
 
@@ -61,6 +96,20 @@ function onTick(candle) {
 ```
 
 A persistent `userData` object is available for storing state between ticks.
+Uses native ECharts configuration → flexible & powerful.
+
+---
+
+## 🧠 Architecture Overview
+
+The system is structured into:
+
+* **Data Layer** → OHLCV loader (local JSON)
+* **Strategy Layer** → user-defined logic (`onInit`, `onTick`)
+* **Execution Layer** → order simulation (fee, slippage, TP/SL)
+* **Portfolio Layer** → balance, equity, PnL tracking
+* **Visualization Layer** → ECharts rendering
+
 
 ---
 
@@ -100,6 +149,15 @@ Each candle object follows the Binance kline format:
 { "t": 1735689600000, "o": 94821.5, "h": 95100.0, "l": 94600.3, "c": 94980.2, "v": 123.456 }
 ```
 
+
+---
+
+## ⚠️ Limitations
+
+* Candle-based simulation (no tick-level precision)
+* Orders are executed immediately (no latency model yet)
+* Single-strategy execution (no parallel testing)
+
 ---
 
 ## 🛠️ Technology Stack
@@ -122,6 +180,31 @@ This project serves as the simulation core of a broader algorithmic trading syst
 - A **data pipeline** for fetching and storing historical kline data from Binance
 - A **proprietary indicator suite** — non-repainting Zigzag, dynamic ATR anchored to swing events, and multi-tiered support/resistance levels
 - A future **AI training environment** where autonomous agents learn decision-making from market structure
+
+---
+
+## 💡 About the Author
+
+Built by a **JavaScript developer focused on algorithmic systems and simulation logic**.
+
+This project is part of a broader exploration in:
+
+* trading system design
+* probabilistic modeling
+* AI-assisted decision systems
+
+---
+
+## 🤝 Open for Work
+
+I am available for:
+
+* JavaScript development (Frontend / Logic)
+* Data visualization & dashboard (ECharts)
+* Trading tools & backtesting systems
+
+📩 Contact: [miftahulmunir001@gmail.com](mailto:miftahulmunir001@gmail.com)
+🔗 LinkedIn: https://www.linkedin.com/in/miftahul-munir-1530888b/
 
 ---
 
