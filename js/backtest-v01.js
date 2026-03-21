@@ -1,5 +1,9 @@
 window.abe = window.abe || {}
 
+abe.backtestEngine = {
+	update: () => {}
+}
+
 abe.createBacktestEngine = (initialBalance, feePercent, slippagePoint) => {
 	const engine = {
 		balance: initialBalance,
@@ -59,11 +63,11 @@ abe.createBacktestEngine = (initialBalance, feePercent, slippagePoint) => {
 		},
 		
 		// 3. Modifikasi TP / SL Dinamis (Trailing)
-		modifyOrder: (id, newTp, newSl) => {
-			const pos = engine.positions.find(p => p.id === id);
+		modifyOrder: params => {//(id, newTp, newSl) => {
+			const pos = engine.positions.find(p => p.id === params.id);
 			if (pos) {
-				if (newTp !== undefined && newTp !== null) pos.tp = newTp;
-				if (newSl !== undefined && newSl !== null) pos.sl = newSl;
+				if (params.newTp) pos.tp = params.newTp
+				if (params.newSl) pos.sl = params.newSl
 				//console.log(`[MODIFY] Order ${id} updated -> TP: ${pos.tp}, SL: ${pos.sl}`);
 			}
 		},
@@ -135,5 +139,7 @@ abe.createBacktestEngine = (initialBalance, feePercent, slippagePoint) => {
 			};
 		}
 	};
-	return engine;
+	//return engine;
+	abe.backtestEngine = engine
+	
 }

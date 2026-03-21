@@ -50,6 +50,8 @@ const newEngine = a => {
 	text.value = 
 `
 function onInit() {
+	//abe.createBacktestEngine(initialBalance, feePercent, slippagePoint)
+	
 	userData.maPeriod = 14
 	userData.maBuffer = []
 	userData.maSum = 0
@@ -74,6 +76,9 @@ function onTick(candle) {
 		userData.maLine.push(null)
 	}
 	
+	//abe.backtestEngine.sendOrder(side("BUY" | "SELL"), price, entryPrice, params = {qty: , tp: , sl: , comment}) return orderId
+	//abe.backtestEngine.modifyOrder(params) params={orderId, newTp, newSl}
+	//abe.backtestEngine.closeOrder(id, price, time)
 }
 `
 	const codemirror = CodeMirror.fromTextArea(text, {lineNumbers: true, mode: 'javascript', })
@@ -134,6 +139,7 @@ addEventListener('load', async () => {
 		data.forEach(candle => {
 			xAxis.push(new Date(candle.t).toISOString())
 			abe.candle.push([candle.o, candle.c, candle.l, candle.h])
+			abe.backtestEngine.update(candle)
 			onTick(candle)
 		})
 		abe.genChartSeries(xAxis)
