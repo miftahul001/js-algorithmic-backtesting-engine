@@ -51,13 +51,14 @@ const newEngine = a => {
 `
 function onInit() {
 	//abe.createBacktestEngine(initialBalance, feePercent, slippagePoint)
+	initBacktestEngine(1000, 0.6, 0) // = (initialBalance = 1000, feePercent = 0, slippagePoint = 0)
 	
 	userData.maPeriod = 14
 	userData.maBuffer = []
 	userData.maSum = 0
 	userData.maLine = []
 	
-	abe.addChart({
+	addChart({
 		name: 'Moving Average',
 		type: 'line',
 		data: userData.maLine,
@@ -76,9 +77,9 @@ function onTick(candle) {
 		userData.maLine.push(null)
 	}
 	
-	//abe.backtestEngine.sendOrder(side("BUY" | "SELL"), price, entryPrice, params = {qty: , tp: , sl: , comment}) return orderId
-	//abe.backtestEngine.modifyOrder(params) params={orderId, newTp, newSl}
-	//abe.backtestEngine.closeOrder(id, price, time)
+	//sendOrder(side("BUY" | "SELL"), price, qty, entryPrice, params = {tp: , sl: , comment:}) return orderId
+	//modifyOrder(orderId, newTp, newSl)
+	//closeOrder(id)
 }
 `
 	const codemirror = CodeMirror.fromTextArea(text, {lineNumbers: true, mode: 'javascript', })
@@ -95,56 +96,36 @@ const createPage = a =>
 <link href="favicon.svg" rel="icon" sizes="any" type="image/svg+xml">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="js/echarts.min.js"></script>
-<script src="js/chartOption-v01.js"></script>
-<script src="js/dataLoader.js"></script>
-<script src="js/backtest-v01.js"></script>
+<script src="js/engine.js?v=001"></script>
 <script src="js/trade-result.js"></script>
 <script>
+let addChart, initBacktestEngine, sendOrder, modifyOrder, closeOrder
 const userData = {}
 `
 + a +
 `
 addEventListener('load', async () => {
-	//setTimeout(async()=>{
-		// abe = Algorithmic Backtesting Engine
-		abe.chart1 = echarts.init(document.getElementById('chart1'), 'dark')
-		const xAxis = []
-		abe.candle = []
-		abe.trade = []
-		
-		abe.addChart({
-			type: 'candlestick',
-			data: abe.candle,
-			zlevel: 1,
-			xAxisIndex: 0,
-			yAxisIndex: 0,
-			itemStyle: {
-				color: '#51ff51',//upColor,
-				color0: '#ff5151',//downColor,
-				borderColor: '#51ff51',//upBorderColor,
-				borderColor0: '#ff5151',//downBorderColor
-				opacity: 0.5,
-			},
-			markLine: {
-				data: []
-			},
-			markPoint: {
-				data: []
-			},
-		})
-		
-		onInit()
-		
-		const data = await abe.loadData()
-		data.forEach(candle => {
-			xAxis.push(new Date(candle.t).toISOString())
-			abe.candle.push([candle.o, candle.c, candle.l, candle.h])
-			abe.backtestEngine.update(candle)
-			onTick(candle)
-		})
-		abe.genChartSeries(xAxis)
-		
-	//}, 1000)
+	let engine
+	initBacktestEngine = (initialBalance = 1000, feePercent = 0, slippagePoint = 0) => { engine = new BacktestEngine(initialBalance, feePercent, slippagePoint) }
+	
+	addChart = params => { engine.addChart(params) }
+	sendOrder = (side, price, qty, time, params = {}) => { engine.sendOrder(side, price, qty, time, params = {}) }
+	modifyOrder = (id, newTp = null, newSl = null) =>  { engine.modifyOrder(id, newTp = null, newSl = null) }
+	closeOrder = id => { engine.closeOrder(id, candle.c, candle.t) }
+	const chart1 = echarts.init(document.getElementById('chart1'), 'dark')
+	
+	//const trade = []
+	
+	onInit()
+	
+	const data = await engine.loadData('data/30m/2025-01-01.json')
+	data.forEach(candle => {
+		engine.update(candle)
+		onTick(candle)
+	})
+	
+	chart1.setOption(engine.createChartOption())
+	
 })
 
 </script>

@@ -4,8 +4,8 @@ A lightweight, browser-based, event-driven backtesting engine designed for **rap
 
 This project focuses on **realistic simulation**, **clear visualization**, and **developer flexibility** — allowing you to test trading logic without complex setup.
 
-🔗 Live Demo: https://miftahul001.github.io/js-algorithmic-backtesting-engine/
-📖 Documentation: ./DOCUMENTATION.md
+🔗 Live Demo: (https://miftahul001.github.io/js-algorithmic-backtesting-engine/)
+📖 Documentation: (https://github.com/miftahul001/js-algorithmic-backtesting-engine/blob/main/DOCUMENTATION.md)
 
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-blue)](https://miftahul001.github.io/js-algorithmic-backtesting-engine/)
