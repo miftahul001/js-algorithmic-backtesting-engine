@@ -13,6 +13,9 @@ iframe {
 }
 .CodeMirror { height: auto; flex: 1 1 auto; }
 
+/* ============================================================
+   Pop / Dialog Window
+   ============================================================ */
 .pop1 {
 	background: rgba(255, 255, 255, 0.9);
 	border-radius: 9px;
@@ -26,20 +29,21 @@ iframe {
 }
 .pop1 > div:nth-child(1) {
 	align-items: center;
-	background:rgba(233,237,237,0.9);
-	border-radius:7px;
+	background: rgba(233,237,237,0.9);
+	border-radius: 7px;
 	box-shadow: inset 5px 5px 15px rgba(191,201,203,0.9), inset -5px -5px 15px rgba(191,201,203,0.9);
 	cursor: grab;
 	display: flex;
 	padding: 3px 15px;
 }
 .pop1 > div:nth-child(1) > div {
-	color:rgba(17,123,101,0.9);
+	color: rgba(17,123,101,0.9);
 	font-size: 17px;
 	font-weight: bold;
 	text-shadow: 0 0 1px #154359;
 }
-.pop1 > div:nth-child(1) > div:nth-child(1), .pop1 > div:nth-child(1) > div:nth-child(3) {
+.pop1 > div:nth-child(1) > div:nth-child(1),
+.pop1 > div:nth-child(1) > div:nth-child(3) {
 	cursor: default;
 }
 .pop1 > div:nth-child(1) > div:nth-child(2) {
@@ -87,8 +91,139 @@ iframe {
 	resize: both;
 }
 
-.trading-history { border-collapse: collapse; }
-.trading-history, .trading-history th, .trading-history td {
+/* ============================================================
+   Result Window (Chart / Stats / History)
+   ============================================================ */
+
+/* Panel wrapper — toolbar + content area */
+.result-toolbar {
+	padding-bottom: 0;
+}
+.result-toolbar-inner {
+	padding: 0;
+}
+
+/* Content area — iframe / stats / history */
+.result-panel {
+	display: flex;
+	margin: 0;
+	padding: 0;
+	overflow: auto;
+	resize: none;
+	width: 70vw;
+	height: 70vh;
+}
+
+/* ============================================================
+   Tab Navigation
+   ============================================================ */
+.tab-bar {
+	display: flex;
+	border-bottom: 0.5px solid rgba(0,0,0,0.1);
+}
+.tab-nav {
+	padding: 7px 14px;
+	font-size: 12px;
+	font-weight: 500;
+	cursor: pointer;
+	border-bottom: 2px solid transparent;
+	color: rgba(0,0,0,0.45);
+	user-select: none;
+	white-space: nowrap;
+	transition: color 0.15s;
+}
+.tab-nav.active {
+	border-bottom-color: #333;
+	color: inherit;
+}
+.tab-nav:hover {
+	color: inherit;
+}
+
+/* ============================================================
+   Trading Stats
+   ============================================================ */
+.stats-wrap {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	padding: 4px;
+}
+.stat-box {
+	border: 1px solid rgba(0,0,0,0.12);
+	border-radius: 7px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+	margin: 5px;
+	padding: 9px 13px;
+	min-width: 120px;
+}
+.stat-box-label {
+	color: rgba(0,0,0,0.5);
+	font-size: 11px;
+	margin-bottom: 4px;
+}
+.stat-box-value {
+	font-size: 16px;
+	font-weight: bold;
+}
+.stat-box-value.positive { color: #1a9e5c; }
+.stat-box-value.negative { color: #d94040; }
+
+/* ============================================================
+   Dropdown Menu
+   ============================================================ */
+.dropdown-wrap {
+	position: fixed;
+	background: rgba(255,255,255,0.97);
+	border: 0.5px solid rgba(0,0,0,0.15);
+	border-radius: 7px;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+	min-width: 180px;
+	padding: 4px 0;
+	z-index: 9999;
+	font-size: 13px;
+}
+.dropdown-item {
+	padding: 6px 14px;
+	cursor: pointer;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: rgba(0,0,0,0.8);
+}
+.dropdown-item:hover {
+	background: rgba(0,0,0,0.06);
+}
+.dropdown-divider {
+	border-top: 0.5px solid rgba(0,0,0,0.1);
+	margin: 4px 0;
+}
+.dropdown-arrow {
+	color: rgba(0,0,0,0.4);
+	font-size: 15px;
+}
+.dropdown-sub {
+	position: fixed;
+	background: rgba(255,255,255,0.97);
+	border: 0.5px solid rgba(0,0,0,0.15);
+	border-radius: 7px;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+	min-width: 160px;
+	padding: 4px 0;
+	z-index: 10000;
+	font-size: 13px;
+}
+
+/* ============================================================
+   Trading History Table
+   ============================================================ */
+.trading-history {
+	border-collapse: collapse;
+	width: 100%;
+}
+.trading-history,
+.trading-history th,
+.trading-history td {
 	border: 1px solid #bbb;
 	padding: 3px 7px;
 }
@@ -104,17 +239,20 @@ iframe {
 	background: #515151;
 	color: #f1f1f1;
 }
-.trading-history tr > th > div { cursor: pointer; }
 .trading-history tr > th > div {
+	cursor: pointer;
 	display: flex;
 	gap: 5px;
 	justify-content: space-between;
 	pointer-events: none;
 }
-
 .trading-history tbody > tr.trade1 td {
 	pointer-events: none;
 }
 .trading-history tbody > tr.active1 {
 	background: #e1e1e1;
 }
+.td-buy  { color: #1a9e5c; }
+.td-sell { color: #d94040; }
+.td-positive { color: #1a9e5c; }
+.td-negative { color: #d94040; }
