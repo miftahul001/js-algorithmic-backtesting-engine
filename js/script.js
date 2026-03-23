@@ -1,7 +1,168 @@
+//======================================================================
+// Script Loader
+//======================================================================
+// Data struktur menu — update seiring repo berkembang
+const BASE = 'https://raw.githubusercontent.com/miftahul001/js-algorithmic-backtesting-engine/main'
+const menuData = [
+	{
+		label: 'Load from disk',
+		file: null   // trigger file input
+	},
+	{ divider: true },
+	{
+		label: 'Indicators',
+		children: [
+			{ label: 'SMA',  file: `${BASE}/indicators/sma.js`  },
+			{ label: 'EMA',  file: `${BASE}/indicators/ema.js`  },
+			{ label: 'ATR',  file: `${BASE}/indicators/atr.js`  },
+		]
+	},
+	{ divider: true },
+	{
+		label: 'EA',
+		children: [
+			{ label: 'MA Crossover', file: `${BASE}/ea/ma-crossover.js` },
+		]
+	},
+]
+
+// File input tersembunyi
+const fileInput = {button: el({a:'input', b:document.body, d:{
+	type:'file', accept:'.js', style:'display:none'
+}, e:{change: a => {
+	const file = a.target.files[0]
+	if (!file) return
+	const reader = new FileReader()
+	reader.onload = e => { fileInput.codemirror.setValue(e.target.result); fileInput.codemirror = null }
+	reader.readAsText(file)
+	dropdown.remove()
+}}})
+}
+
+// Load dari raw URL
+const loadFromUrl = async (url, codemirror) => {
+	try {
+		const text = await fetch(url).then(r => {
+			if (!r.ok) throw new Error(`HTTP ${r.status}`)
+			return r.text()
+		})
+		codemirror.setValue(text)
+	} catch(e) {
+		alert(`Failed to load: ${e.message}`)
+	}
+}
+
+// Dropdown element
+let dropdown = null
+
+const closeDropdown = () => { dropdown?.remove(); dropdown = null }
+
+const buildDropdown = (anchorEl, codemirror) => {
+	closeDropdown()
+	dropdown = el({a:'div', b:document.body, d:{style:`
+		position:fixed;
+		background:rgba(255,255,255,0.97);
+		border:0.5px solid rgba(0,0,0,0.15);
+		border-radius:7px;
+		box-shadow:0 4px 16px rgba(0,0,0,0.12);
+		min-width:180px;
+		padding:4px 0;
+		z-index:9999;
+		font-size:13px;
+	`}})
+	
+	// Posisi relatif terhadap button
+	const rect = anchorEl.getBoundingClientRect()
+	dropdown.style.top  = `${rect.bottom + 4}px`
+	dropdown.style.left = `${rect.left}px`
+	
+	const itemStyle = `
+		padding:6px 14px; cursor:pointer; display:flex;
+		justify-content:space-between; align-items:center;
+		color:rgba(0,0,0,0.8);`
+	const hoverOn  = e => e.target.style.background = 'rgba(0,0,0,0.06)'
+	const hoverOff = e => e.target.style.background = 'transparent'
+	
+	menuData.forEach(item => {
+		
+		// Divider
+		if (item.divider) {
+			el({a:'div', b:dropdown, d:{style:'border-top:0.5px solid rgba(0,0,0,0.1); margin:4px 0;'}})
+			return
+		}
+		
+		// Item tanpa children
+		if (!item.children) {
+			el({a:'div', b:dropdown, c:item.label, d:{style:itemStyle}, e:{
+				mouseenter: hoverOn,
+				mouseleave: hoverOff,
+				click: () => {
+					closeDropdown()
+					fileInput.codemirror = codemirror
+					fileInput.button.click()
+				}
+			}})
+			return
+		}
+		
+		// Item dengan submenu
+		const parent = el({a:'div', b:dropdown, d:{style:itemStyle + 'position:relative;'}, e:{
+			mouseenter: e => {
+				hoverOn(e)
+				// Buka submenu
+				const sub = el({a:'div', b:parent, d:{style:`
+					position:fixed;
+					background:rgba(255,255,255,0.97);
+					border:0.5px solid rgba(0,0,0,0.15);
+					border-radius:7px;
+					box-shadow:0 4px 16px rgba(0,0,0,0.12);
+					min-width:160px;
+					padding:4px 0;
+					z-index:10000;
+					font-size:13px;
+				`}})
+				const pr = parent.getBoundingClientRect()
+				sub.style.top  = `${pr.top}px`
+				sub.style.left = `${pr.right -3 }px`
+				parent._sub = sub
+				
+				item.children.forEach(child => {
+					el({a:'div', b:sub, c:child.label, d:{style:itemStyle}, e:{
+						mouseenter: hoverOn,
+						mouseleave: hoverOff,
+						click: () => {
+							closeDropdown()
+							loadFromUrl(child.file, codemirror)
+						}
+					}})
+				})
+			},
+			mouseleave: e => {
+				hoverOff(e)
+				parent._sub?.remove()
+				parent._sub = null
+			}
+		}})
+		el({a:'span', b:parent, c:item.label})
+		el({a:'span', b:parent, c:'›', d:{style:'color:rgba(0,0,0,0.4); font-size:15px;'}})
+	})
+	
+	// Klik di luar = tutup
+	setTimeout(() => {
+		document.addEventListener('click', closeDropdown, {once: true})
+	}, 0)
+}
+//======================================================================
+// end of Script Loader
+//======================================================================
+
 const newEngine = a => {
 	
+	//==================================================================
+	// Result window (chart / trading stats / trading history)
+	//==================================================================
 	const ct = dlg({title:''}).parentElement
-	ct.style = ''
+	ct.style = `top:${71 + (11*document.body.children.length)}px; left:${103 + (11*document.body.children.length)}px`
 	ct.className = 'pop1'
 	ct.children[0].style = ''
 	ct.children[0].textContent = ''
@@ -11,12 +172,57 @@ const newEngine = a => {
 		ct.remove()
 	} }})
 	ct.children[1].remove()
-	ct.children[1].style = 'resize:both; overflow:scroll; width:70vw; height:70vh;'
-	const iframe = el({a:'iframe', b:ct.children[1]})
+	ct.children[1].style = ''
+	el({a:'div', b:ct.children[1], d:{style:'padding-bottom:0;'} })
+	el({a:'div', b:ct.children[1].children[0], d:{style:'padding:0;'}})
+	const iframe = el({a:'iframe', b:el({a:'div', b:ct.children[1], d:{style:'display:flex; margin:0; padding:0; overflow:auto; resize:none; width:70vw; height:70vh;'}}) })
+	const tradingStat = el({a:'div'})
+	const tradingHist = el({a:'div'})
+	const tabBar = el({a:'div', b:ct.children[1].children[0].children[0], d:{style:'display:flex; border-bottom:0.5px solid rgba(0,0,0,0.1);'}})
+	const tabs = [
+		{label:'Chart',				panel: iframe		},
+		{label:'Trading Stats',		panel: tradingStat	},
+		{label:'Trading History',	panel: tradingHist	},
+	]
+	const switchTab = tab => {
+		const lastActive = [...tabBar.children].find(t => t.classList.contains('active'))
+		if (lastActive === tab) return
+		lastActive.classList.remove('active')
+		lastActive.style.borderBottomColor = 'transparent'
+		lastActive.style.color = 'rgba(0,0,0,0.45)'
+		tab.classList.add('active')
+		tab.style.borderBottomColor = 'var(--text,#333)'
+		tab.style.color = 'inherit'
+		ct.children[1].children[1].children[0].remove()
+		ct.children[1].children[1].appendChild(tabs[+tab.getAttribute('data-index')].panel)
+	}
+	tabs.forEach((tab, i) => {
+		el({a:'div', b:tabBar, c:tab.label, d:{
+			class: i === 0 ? 'tab-nav active' : 'tab-nav',
+			'data-index': `${i}`,
+			style:`padding:7px 14px; font-size:12px; font-weight:500; cursor:pointer;
+			border-bottom:2px solid ${i===0 ? 'var(--text,#333)' : 'transparent'};
+			color:${i===0 ? 'inherit' : 'rgba(0,0,0,0.45)'};
+			user-select:none; white-space:nowrap;`
+		}, e:{click: a => switchTab(a.target)}})
+	})
+		
+	const fillStats = params => { tradingStat.innerHTML = params }
+	const fillHist = params => { tradingHist.innerHTML = params }
+	iframe.onload = () => {
+		iframe.contentWindow.fillStats = fillStats
+		iframe.contentWindow.fillHist = fillHist
+	}
 	ct.remove()
+	//==================================================================
+	// end of Result window
+	//==================================================================
 	
+	//==================================================================
+	// Script window
+	//==================================================================
 	a = dlg({title:''}).parentElement
-	a.style = ''
+	a.style = `top:${59 + (11*document.body.children.length)}px; left:${77 + (11*document.body.children.length)}px`
 	a.className = 'pop1'
 	a.children[0].style = ''
 	a.children[0].textContent = ''
@@ -28,7 +234,6 @@ const newEngine = a => {
 	el({a:'div', b:a.children[0], d:{class:'fa fa-close'}, e:{click: b => {
 		a.remove()
 	} }})
-	//a.removeChild(a.children[1])
 	a.children[1].remove()
 	a.children[1].style = ''
 	
@@ -37,8 +242,12 @@ const newEngine = a => {
 	el({a:'button', b:b.children[0], c:'data' })
 	// choose data from github ar provide own data
 	// if choose data from github, choose timeframe and data range
-	el({a:'button', b:b.children[0], c:'loadScript' })
-	// load from external script
+	el({a:'button', b:b.children[0], c:'Load Script', e:{
+		click: a => {
+			a.stopPropagation()
+			buildDropdown(a.target, codemirror)
+		}
+	}})
 	
 	el({a:'div', b:b })
 	el({a:'div', b:b, c:'Run', e:{click: b => {
@@ -49,35 +258,38 @@ const newEngine = a => {
 	const text = el({a:'textarea', b:el({a:'div', b:a.children[1]}) })
 	text.value = 
 `
+// place your variables here
+
+const maPeriod = 14
+const maBuffer = []
+const maLine = []
+let maSum = 0
+
+
 function onInit() {
-	//abe.createBacktestEngine(initialBalance, feePercent, slippagePoint)
-	initBacktestEngine(1000, 0.6, 0) // = (initialBalance = 1000, feePercent = 0, slippagePoint = 0)
-	
-	userData.maPeriod = 14
-	userData.maBuffer = []
-	userData.maSum = 0
-	userData.maLine = []
+	//initBacktestEngine(initialBalance = 1000, feePercent = 0.5, slippagePoint = 0.5)
+	//initBacktestEngine(1000, 0.6, 0)
 	
 	addChart({
 		name: 'Moving Average',
 		type: 'line',
-		data: userData.maLine,
+		data: maLine,
 	})
 	
 }
 
 function onTick(candle) {
-	userData.maBuffer.push(candle.c)
-	userData.maSum += candle.c
-	if (userData.maBuffer.length === userData.maPeriod) {
-		userData.maLine.push(userData.maSum / userData.maPeriod)
-		userData.maSum -= userData.maBuffer.shift()
+	maBuffer.push(candle.c)
+	maSum += candle.c
+	if (maBuffer.length === maPeriod) {
+		maLine.push(maSum / maPeriod)
+		maSum -= maBuffer.shift()
 		
 	} else {
-		userData.maLine.push(null)
+		maLine.push(null)
 	}
 	
-	//sendOrder(side("BUY" | "SELL"), price, qty, entryPrice, params = {tp: , sl: , comment:}) return orderId
+	//sendOrder(side("BUY" | "SELL"), qty, params = {tp: , sl: , comment:}) return orderId
 	//modifyOrder(orderId, newTp, newSl)
 	//closeOrder(id)
 }
@@ -85,6 +297,9 @@ function onTick(candle) {
 	const codemirror = CodeMirror.fromTextArea(text, {lineNumbers: true, mode: 'javascript', })
 	el({a:'a', b:a.children[1], c:'powered by CodeMirror', d:{href:'https://codemirror.net/', style:'text-align:right;padding:0 21px;'}})
 	
+	//==================================================================
+	// end of Script window
+	//==================================================================
 }
 
 const createPage = a =>
@@ -100,36 +315,48 @@ const createPage = a =>
 <script src="js/trade-result.js"></script>
 <script>
 let addChart, initBacktestEngine, sendOrder, modifyOrder, closeOrder
-const userData = {}
 `
 + a +
 `
 addEventListener('load', async () => {
-	let engine
+	let engine, currentCandle
+	const pendingCharts = []
 	initBacktestEngine = (initialBalance = 1000, feePercent = 0, slippagePoint = 0) => { engine = new BacktestEngine(initialBalance, feePercent, slippagePoint) }
 	
-	addChart = params => { engine.addChart(params) }
-	sendOrder = (side, price, qty, time, params = {}) => { engine.sendOrder(side, price, qty, time, params = {}) }
-	modifyOrder = (id, newTp = null, newSl = null) =>  { engine.modifyOrder(id, newTp = null, newSl = null) }
-	closeOrder = id => { engine.closeOrder(id, candle.c, candle.t) }
-	const chart1 = echarts.init(document.getElementById('chart1'), 'dark')
+	addChart = params => {
+		if (engine) engine.addChart(params)
+		else pendingCharts.push(params)
+	}
+	sendOrder = (side, qty, params) => { engine.sendOrder(side, currentCandle.c, qty, currentCandle.t, params) }
+	modifyOrder = (id, newTp, newSl) =>  { engine.modifyOrder(id, newTp, newSl) }
+	closeOrder = id => { engine.closeOrder(id, currentCandle.c, currentCandle.t) }
 	
 	//const trade = []
 	
 	onInit()
 	
+	if (!engine) {
+		engine = new BacktestEngine(1000, 0, 0)
+		pendingCharts.forEach(p => engine.addChart(p))  // flush setelah engine siap
+		pendingCharts.length = 0
+	}
+	
 	const data = await engine.loadData('data/30m/2025-01-01.json')
 	data.forEach(candle => {
 		engine.update(candle)
+		currentCandle = candle
 		onTick(candle)
 	})
 	
+	const chart1 = echarts.init(document.getElementById('chart1'), 'dark')
 	chart1.setOption(engine.createChartOption())
+	fillStats('fillStats '+currentCandle.t)
+	fillHist('fillHist '+currentCandle.c)
 	
 })
 
 </script>
-</head><body>
-<div id="chart1" style="width:95vw; height:95vh;"></div>
+</head><body style="display:flex; margin:0; padding:0; height:100vh;">
+<div id="chart1" style="flex:1 1 auto;"></div>
 </body>
 </html>`

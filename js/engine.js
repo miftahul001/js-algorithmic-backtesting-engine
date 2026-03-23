@@ -90,6 +90,7 @@ class BacktestEngine {
 #slippage
 #positions = []
 #history = []
+#pendingOrders = []
 
 // Eksekusi Keluar Market
 #executeExit = (index, pos, price, time, reason) => {
@@ -104,7 +105,7 @@ class BacktestEngine {
 		: (pos.entryPrice - pos.exitPrice) * pos.qty
 	
 	// Potong Fee Exit
-	const fee = pos.exitPrice * pos.qty * engine.feePercent
+	const fee = pos.exitPrice * pos.qty * this.#feePercent
 	pos.pnl += rawPnl - fee
 	pos.grossPnL = rawPnl
 	pos.fee += fee
@@ -142,7 +143,6 @@ class BacktestEngine {
 		}
 		return false
 	}
-	return false
 }
 
 #updateEquity = price => {
@@ -158,7 +158,7 @@ class BacktestEngine {
 constructor(initialBalance, feePercent, slippagePoint) {
 	this.#balance = initialBalance
 	this.#equity = initialBalance
-	this.#feePercent = feePercent / 100, // Misal: 0.1% menjadi 0.001
+	this.#feePercent = feePercent / 100 // Misal: 0.1% menjadi 0.001
 	this.#slippage = slippagePoint
 	
 	Object.freeze(this)
@@ -232,7 +232,7 @@ update(bar) {
 	}
 	
 	// Update Equity (Floating P/L)
-	this.#updateEquity()
+	this.#updateEquity(bar.c)
 	
 	// Visualization
 	this.#candlestickData.push([bar.o, bar.c, bar.l, bar.h])
@@ -242,6 +242,31 @@ update(bar) {
 
 // Send Order (Entry)
 sendOrder(side, price, qty, time, params = {}) {
+	
+	// Guard: qty harus positif
+	if (!qty || qty <= 0) throw new Error(`sendOrder: invalid qty "${qty}"`)
+	
+	// Guard: tp/sl harus konsisten dengan side
+	if (params.tp && params.sl) {
+		if (side === 'BUY' && params.tp <= params.sl)
+			throw new Error(`sendOrder BUY: tp (${params.tp}) must be > sl (${params.sl})`)
+		if (side === 'SELL' && params.tp >= params.sl)
+			throw new Error(`sendOrder SELL: tp (${params.tp}) must be < sl (${params.sl})`)
+	}
+	
+	// Guard: tp tidak boleh sudah terlewat saat order masuk
+	if (side === 'BUY') {
+		if (params.tp && params.tp <= price)
+			throw new Error(`sendOrder BUY: tp (${params.tp}) must be > entry price (${price})`)
+		if (params.sl && params.sl >= price)
+			throw new Error(`sendOrder BUY: sl (${params.sl}) must be < entry price (${price})`)
+	} else {
+		if (params.tp && params.tp >= price)
+			throw new Error(`sendOrder SELL: tp (${params.tp}) must be < entry price (${price})`)
+		if (params.sl && params.sl <= price)
+			throw new Error(`sendOrder SELL: sl (${params.tp}) must be > entry price (${price})`)
+	}
+	
 	// Simulasi Slippage
 	const entryPrice = side === 'BUY'
 		? price + this.#slippage
@@ -275,7 +300,7 @@ sendOrder(side, price, qty, time, params = {}) {
 }
 
 // Modifikasi TP / SL Dinamis (Trailing)
-modifyOrder(id, newTp, newSl) {//(params) {//(id, newTp, newSl) => {
+modifyOrder(id, newTp = null, newSl = null) {
 	const pos = this.#positions.find(p => p.id === id)
 	if (pos) {
 		if (newTp) pos.tp = newTp
