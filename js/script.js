@@ -35,7 +35,7 @@ const fileInput = {button: el({a:'input', b:document.body, d:{
 	const reader = new FileReader()
 	reader.onload = e => { fileInput.codemirror.setValue(e.target.result); fileInput.codemirror = null }
 	reader.readAsText(file)
-	dropdown.remove()
+	dropdown && dropdown.remove()
 }}})
 }
 
@@ -156,6 +156,99 @@ const buildDropdown = (anchorEl, codemirror) => {
 // end of Script Loader
 //======================================================================
 
+//======================================================================
+// Trading History
+//======================================================================
+const fillHist = (parent, data) => {
+	parent.innerHTML = ''
+	const table = el({a:'table', b:parent, d:{class:'trading-history'} })
+	
+	const header = el({a:'tr', b:el({a:'thead', b:table}) })
+	el({a:'th', b:header, c:'No'})
+	el({a:'th', b:header, c:'Id'})
+	el({a:'th', b:header, c:'Side'})
+	el({a:'th', b:header, c:'Qty'})
+	el({a:'th', b:header, c:'Status'})
+	el({a:'th', b:header, c:'TP'})
+	el({a:'th', b:header, c:'SL'})
+	el({a:'th', b:header, c:'Entry Time'})
+	el({a:'th', b:header, c:'Entry Price'})
+	el({a:'th', b:header, c:'Exit Time'})
+	el({a:'th', b:header, c:'Exit Price'})
+	el({a:'th', b:header, c:'PnL'})
+	el({a:'th', b:header, c:'grossPnL'})
+	el({a:'th', b:header, c:'fee'})
+	el({a:'th', b:header, c:'Total'})
+	el({a:'th', b:header, c:'Reason'})
+	el({a:'th', b:header, c:'Comment'})
+	
+	el({a:'tbody', b:table})
+	let total = 0
+	data.forEach((a,b) => {
+		const tr = el({a:'tr', b:table.children[1] })
+		el({a:'td', b:tr, c:`${b+1}`})
+		
+		el({a:'td', b:tr, c:a.id })
+		if (a.side === 'BUY') {
+			el({a:'td', b:tr, c:'⮝', d:{style:'color:green;'} })
+		} else if (a.side === 'SELL') {
+			el({a:'td', b:tr, c:'⮟', d:{style:'color:red;'} })
+		} else {
+			el({a:'td', b:tr, c:'?' })
+		}
+		
+		el({a:'td', b:tr, c:a.qty })
+		el({a:'td', b:tr, c:a.status })
+		el({a:'td', b:tr, c:a.tp })
+		el({a:'td', b:tr, c:a.sl })
+		
+		el({a:'td', b:tr, c:a.entryTime })
+		el({a:'td', b:tr, c:a.entryPrice })
+		el({a:'td', b:tr, c:a.exitTime })
+		el({a:'td', b:tr, c:a.exitPrice })
+		
+		el({a:'td', b:tr, c:a.pnl.toFixed(2) })
+		el({a:'td', b:tr, c:a.grossPnL.toFixed(2) })
+		el({a:'td', b:tr, c:a.fee.toFixed(2) })
+		total += a.pnl
+		el({a:'td', b:tr, c:total.toFixed(2) })
+		
+		el({a:'td', b:tr, c:a.reason })
+		el({a:'td', b:tr, c:a.comment })
+		
+	})
+}
+//======================================================================
+// end of Trading History
+//======================================================================
+
+//======================================================================
+// Trading Stats
+//======================================================================
+const fillStats = (parent, data) => {
+	const createBox = (title, value) => {
+		const a = el({a:'div', b:parent, d:{style: `
+			border:1px solid rgba(0,0,0,0.15);
+			border-radius:7px;
+			box-shadow:0 4px 16px rgba(0,0,0,0.12);
+			margin: 7px;
+			padding: 9px;
+		`}})
+		el({a:'div', b:a, c:title})
+		el({a:'div', b:a, c:value})
+	}
+	parent.innerHTML = ''
+	
+	createBox('Final Balance', data.finalBalance)
+	createBox('Total P&L', data.pnl)
+	createBox('Win Rate', data.winRate)
+	createBox('Total Trades', data.history.length) // data.history.length data.positions.length
+	
+}
+//======================================================================
+// end of Trading Stats
+//======================================================================
+
 const newEngine = a => {
 	
 	//==================================================================
@@ -176,7 +269,9 @@ const newEngine = a => {
 	el({a:'div', b:ct.children[1], d:{style:'padding-bottom:0;'} })
 	el({a:'div', b:ct.children[1].children[0], d:{style:'padding:0;'}})
 	const iframe = el({a:'iframe', b:el({a:'div', b:ct.children[1], d:{style:'display:flex; margin:0; padding:0; overflow:auto; resize:none; width:70vw; height:70vh;'}}) })
-	const tradingStat = el({a:'div'})
+	const tradingStat = el({a:'div', d:{style:`
+		display:flex;
+	`}})
 	const tradingHist = el({a:'div'})
 	const tabBar = el({a:'div', b:ct.children[1].children[0].children[0], d:{style:'display:flex; border-bottom:0.5px solid rgba(0,0,0,0.1);'}})
 	const tabs = [
@@ -206,11 +301,12 @@ const newEngine = a => {
 			user-select:none; white-space:nowrap;`
 		}, e:{click: a => switchTab(a.target)}})
 	})
-		
-	const fillStats = params => { tradingStat.innerHTML = params }
-	const fillHist = params => { tradingHist.innerHTML = params }
 	iframe.onload = () => {
-		iframe.contentWindow.fillStats = fillStats
+		iframe.contentWindow.fillStats = data => {
+			data.pnl = data.history.reduce((a,b)=>a+b.pnl,0).toFixed(2) // we need refactor engine getStats
+			fillStats(tradingStat, data)
+			fillHist(tradingHist, data.history)
+		}
 		iframe.contentWindow.fillHist = fillHist
 	}
 	ct.remove()
@@ -312,7 +408,6 @@ const createPage = a =>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="js/echarts.min.js"></script>
 <script src="js/engine.js?v=001"></script>
-<script src="js/trade-result.js"></script>
 <script>
 let addChart, initBacktestEngine, sendOrder, modifyOrder, closeOrder
 `
@@ -350,8 +445,7 @@ addEventListener('load', async () => {
 	
 	const chart1 = echarts.init(document.getElementById('chart1'), 'dark')
 	chart1.setOption(engine.createChartOption())
-	fillStats('fillStats '+currentCandle.t)
-	fillHist('fillHist '+currentCandle.c)
+	fillStats(engine.getStats())
 	
 })
 
