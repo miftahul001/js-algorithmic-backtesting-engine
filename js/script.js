@@ -82,7 +82,7 @@ const buildDropdown = (anchorEl, codemirror) => {
 
 		const parent = el({a:'div', b:dropdown, d:{class:'dropdown-item'}, e:{
 			mouseenter: () => {
-				const sub = el({a:'div', b:document.body, d:{class:'dropdown-sub'}})
+				const sub = el({a:'div', b:parent, d:{class:'dropdown-sub'}})
 				const pr = parent.getBoundingClientRect()
 				sub.style.top  = `${pr.top}px`
 				sub.style.left = `${pr.right - 3}px`
