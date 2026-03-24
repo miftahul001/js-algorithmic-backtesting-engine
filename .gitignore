@@ -1,3 +1,6 @@
+# Old data
+/backup/
+
 # Logs
 logs
 *.log
