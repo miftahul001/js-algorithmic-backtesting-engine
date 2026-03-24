@@ -5,22 +5,79 @@
 <title>Backtesting Engine</title>
 <link href="favicon.svg" rel="icon" sizes="any" type="image/svg+xml">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
 <link href="js/codemirror/codemirror.css" rel="stylesheet">
+<link href="js/codemirror/dracula.css" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-
 <script src="https://miftahul001.github.io/m/m.js"></script>
 <script src="js/codemirror/codemirror.js"></script>
 <script src="js/codemirror/javascript.js"></script>
 <script src="js/script.js"></script>
 </head><body>
 
-<div>
-	<p style="text-align:center; font-size:29px;"><strong>Backtesting Engine</strong></p>
-	<div style="padding:13px 33px;">
-		<button onclick="newEngine()">New</button>
+<!-- Titlebar -->
+<div class="app-titlebar">
+	<span class="app-title">Backtesting Engine</span>
+</div>
+
+<!-- Toolbar -->
+<div class="app-toolbar">
+	<div class="toolbar-group">
+		<div class="tbtn" id="btn-load"><i class="fa fa-folder-open-o"></i> Load Script</div>
+		<div class="tbtn" id="btn-save"><i class="fa fa-download"></i> Save Script</div>
+	</div>
+	<div class="toolbar-sep"></div>
+	<div class="toolbar-group">
+		<div class="tbtn" id="btn-data"><i class="fa fa-database"></i> Data</div>
+	</div>
+	<div class="toolbar-spacer"></div>
+	<div class="toolbar-group">
+		<div class="tbtn tbtn-run" id="btn-run"><i class="fa fa-play"></i> Run</div>
 	</div>
 </div>
 
-</body>
-</html>
+<!-- Main Split Pane -->
+<div class="app-main">
+
+	<!-- Editor Pane -->
+	<div class="editor-pane">
+		<div class="editor-body">
+			<textarea id="editor-textarea"></textarea>
+		</div>
+		<a href="https://codemirror.net/" class="editor-footer" target="_blank">powered by CodeMirror</a>
+	</div>
+
+	<!-- Resizer -->
+	<div class="pane-resizer" id="pane-resizer"></div>
+
+	<!-- Result Pane -->
+	<div class="result-pane">
+		<div class="result-tabs">
+			<div class="rtab active" data-index="0">Chart</div>
+			<div class="rtab" data-index="1">Trading Stats</div>
+			<div class="rtab" data-index="2">Trading History</div>
+		</div>
+		<div class="result-panels">
+			<div class="rpanel active" id="rpanel-0">
+				<iframe id="result-iframe"></iframe>
+			</div>
+			<div class="rpanel" id="rpanel-1">
+				<div class="stats-wrap" id="stats-wrap"></div>
+			</div>
+			<div class="rpanel" id="rpanel-2">
+				<div class="hist-wrap" id="hist-wrap"></div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<!-- Status Bar -->
+<div class="app-statusbar">
+	<span id="status-symbol">BTCUSDT</span>
+	<span id="status-tf">30m</span>
+	<span id="status-range">2025-01-01</span>
+	<div class="statusbar-spacer"></div>
+	<span id="status-summary">—</span>
+</div>
+
+</body></html>

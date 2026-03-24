@@ -1,144 +1,222 @@
-* {
-	box-sizing: border-box;
+/* ============================================================
+   Reset & Base
+   ============================================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+	--bg-0:       #111111;
+	--bg-1:       #1a1a1a;
+	--bg-2:       #1e1e1e;
+	--bg-3:       #252525;
+	--bg-4:       #2d2d2d;
+	--border:     #2f2f2f;
+	--border-2:   #3a3a3a;
+	--text-1:     #e0e0e0;
+	--text-2:     #aaaaaa;
+	--text-3:     #666666;
+	--accent:     #1a9e5c;
+	--accent-dim: #155f3a;
+	--danger:     #d94040;
+	--info:       #007acc;
+	--titlebar-h: 36px;
+	--toolbar-h:  34px;
+	--statusbar-h:20px;
 }
+
 body {
-	font-family: Arial, Helvetica, Tahoma, Verdana, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
-}
-iframe {
-	border: none;
-	flex: 1 1 auto;
-	margin: 0;
-	padding: 0;
-}
-.CodeMirror { height: auto; flex: 1 1 auto; }
-
-/* ============================================================
-   Pop / Dialog Window
-   ============================================================ */
-.pop1 {
-	background: rgba(255, 255, 255, 0.9);
-	border-radius: 9px;
-	box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 11px 3px;
+	background: var(--bg-1);
+	color: var(--text-2);
+	overflow: hidden;
+	height: 100vh;
 	display: flex;
 	flex-direction: column;
-	gap: 7px;
-	margin: 0;
-	position: fixed;
-	padding: 7px 11px 11px;
 }
-.pop1 > div:nth-child(1) {
+
+/* ============================================================
+   Titlebar
+   ============================================================ */
+.app-titlebar {
+	height: var(--titlebar-h);
+	background: var(--bg-0);
+	border-bottom: 1px solid var(--border);
+	display: flex;
 	align-items: center;
-	background: rgba(233,237,237,0.9);
-	border-radius: 7px;
-	box-shadow: inset 5px 5px 15px rgba(191,201,203,0.9), inset -5px -5px 15px rgba(191,201,203,0.9);
-	cursor: grab;
+	justify-content: center;
+	flex-shrink: 0;
+	user-select: none;
+}
+.app-title {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text-1);
+	letter-spacing: 0.4px;
+}
+
+/* ============================================================
+   Toolbar
+   ============================================================ */
+.app-toolbar {
+	height: var(--toolbar-h);
+	background: var(--bg-2);
+	border-bottom: 1px solid var(--border);
 	display: flex;
-	padding: 3px 15px;
+	align-items: center;
+	padding: 0 10px;
+	gap: 2px;
+	flex-shrink: 0;
 }
-.pop1 > div:nth-child(1) > div {
-	color: rgba(17,123,101,0.9);
-	font-size: 17px;
-	font-weight: bold;
-	text-shadow: 0 0 1px #154359;
+.toolbar-group  { display: flex; align-items: center; gap: 2px; }
+.toolbar-sep    { width: 1px; height: 18px; background: var(--border-2); margin: 0 6px; }
+.toolbar-spacer { flex: 1; }
+
+.tbtn {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 10px;
+	border-radius: 4px;
+	cursor: pointer;
+	color: var(--text-2);
+	font-size: 11px;
+	white-space: nowrap;
+	user-select: none;
+	transition: background 0.12s, color 0.12s;
 }
-.pop1 > div:nth-child(1) > div:nth-child(1),
-.pop1 > div:nth-child(1) > div:nth-child(3) {
-	cursor: default;
+.tbtn:hover  { background: var(--bg-4); color: var(--text-1); }
+.tbtn:active { background: var(--border-2); }
+.tbtn i { font-size: 11px; opacity: 0.75; }
+
+.tbtn-run {
+	background: rgba(26,158,92,0.15);
+	color: var(--accent);
+	border: 1px solid rgba(26,158,92,0.3);
 }
-.pop1 > div:nth-child(1) > div:nth-child(2) {
-	flex: 1 1 auto;
-	padding: 9px 33px;
-	text-align: center;
+.tbtn-run:hover { background: rgba(26,158,92,0.25); color: var(--accent); }
+
+/* ============================================================
+   Main Split Pane
+   ============================================================ */
+.app-main {
+	display: flex;
+	flex: 1;
+	overflow: hidden;
 }
-.pop1 > div:nth-child(2) {
-	background: rgba(255,255,255,0.7);
+
+/* ============================================================
+   Editor Pane
+   ============================================================ */
+.editor-pane {
+	width: 38%;
+	min-width: 200px;
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid var(--border);
+	background: var(--bg-2);
+	overflow: hidden;
+}
+.editor-body {
+	flex: 1;
+	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 }
-.pop1 > div:nth-child(2).hide { display: none; }
-.pop1 > div:nth-child(2) > div:nth-child(1) {
+
+/* CodeMirror dark overrides */
+.CodeMirror {
+	height: 100% !important;
+	flex: 1 1 auto;
+	background: var(--bg-2) !important;
+	color: #abb2bf !important;
+	font-family: 'Consolas', 'Monaco', monospace !important;
+	font-size: 12px !important;
+	line-height: 1.6 !important;
+	border: none !important;
+}
+.CodeMirror-gutters {
+	background: var(--bg-2) !important;
+	border-right: 1px solid var(--border) !important;
+}
+.CodeMirror-linenumber  { color: var(--text-3) !important; }
+.CodeMirror-cursor      { border-left-color: var(--accent) !important; }
+.CodeMirror-selected    { background: rgba(26,158,92,0.18) !important; }
+.CodeMirror-scroll      { overflow-x: auto !important; }
+
+.editor-footer {
+	height: 22px;
+	background: var(--accent);
 	display: flex;
-	align-items: flex-end;
-	padding: 5px;
+	align-items: center;
+	padding: 0 10px;
+	font-size: 10px;
+	color: rgba(255,255,255,0.85);
+	text-decoration: none;
+	justify-content: flex-end;
+	flex-shrink: 0;
+	transition: background 0.12s;
 }
-.pop1 > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) {
-	cursor: pointer;
-	font-size: 27px;
-	margin: 0 11px;
-}
-.pop1 > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) { flex: 1 1 auto; }
-.pop1 > div:nth-child(2) > div:nth-child(1) > div:last-child {
-	border-radius: 5px;
-	box-shadow: inset 3px 3px 11px rgba(191,201,203,0.9), inset -3px -3px 11px rgba(191,201,203,0.9);
-	cursor: default;
-	font-size: 13px;
-	font-weight: bold;
-	padding: 3px 11px;
-}
-.pop1 > div:nth-child(2) > div:nth-child(1) > div:hover {
-	background: rgba(233,237,239,0.7);
-}
-.pop1 > div:nth-child(2) > div:nth-child(2) {
-	border: 1px solid #c0c0c0;
-	border-radius: 5px;
-	min-height: 200px;
-	min-width: 300px;
-	max-height: 80vh;
-	max-width: 90vw;
-	overflow: scroll;
-	padding: 5px;
-	resize: both;
-}
+.editor-footer:hover { background: var(--accent-dim); }
 
 /* ============================================================
-   Result Window (Chart / Stats / History)
+   Pane Resizer
    ============================================================ */
-
-/* Panel wrapper — toolbar + content area */
-.result-toolbar {
-	padding-bottom: 0;
+.pane-resizer {
+	width: 4px;
+	background: var(--border);
+	cursor: col-resize;
+	flex-shrink: 0;
+	transition: background 0.15s;
 }
-.result-toolbar-inner {
-	padding: 0;
-}
-
-/* Content area — iframe / stats / history */
-.result-panel {
-	display: flex;
-	margin: 0;
-	padding: 0;
-	overflow: auto;
-	resize: none;
-	width: 70vw;
-	height: 70vh;
-}
+.pane-resizer:hover,
+.pane-resizer.dragging { background: var(--accent); }
 
 /* ============================================================
-   Tab Navigation
+   Result Pane
    ============================================================ */
-.tab-bar {
+.result-pane {
+	flex: 1;
 	display: flex;
-	border-bottom: 0.5px solid rgba(0,0,0,0.1);
+	flex-direction: column;
+	background: var(--bg-1);
+	overflow: hidden;
+	min-width: 200px;
 }
-.tab-nav {
-	padding: 7px 14px;
-	font-size: 12px;
-	font-weight: 500;
+
+/* Tab bar */
+.result-tabs {
+	display: flex;
+	align-items: center;
+	height: 32px;
+	background: var(--bg-3);
+	border-bottom: 1px solid var(--border);
+	flex-shrink: 0;
+}
+.rtab {
+	padding: 0 16px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	font-size: 11px;
+	color: var(--text-3);
 	cursor: pointer;
 	border-bottom: 2px solid transparent;
-	color: rgba(0,0,0,0.45);
 	user-select: none;
 	white-space: nowrap;
-	transition: color 0.15s;
+	transition: color 0.12s;
 }
-.tab-nav.active {
-	border-bottom-color: #333;
-	color: inherit;
+.rtab:hover  { color: var(--text-2); }
+.rtab.active { color: var(--text-1); border-bottom-color: var(--accent); background: var(--bg-2); }
+
+/* Panels */
+.result-panels {
+	flex: 1;
+	overflow: hidden;
+	position: relative;
 }
-.tab-nav:hover {
-	color: inherit;
-}
+.rpanel        { display: none; width: 100%; height: 100%; }
+.rpanel.active { display: flex; flex-direction: column; }
+#result-iframe { flex: 1; border: none; width: 100%; height: 100%; }
 
 /* ============================================================
    Trading Stats
@@ -147,112 +225,110 @@ iframe {
 	display: flex;
 	flex-wrap: wrap;
 	align-content: flex-start;
-	padding: 4px;
+	padding: 10px;
+	gap: 8px;
+	overflow: auto;
 }
 .stat-box {
-	border: 1px solid rgba(0,0,0,0.12);
-	border-radius: 7px;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-	margin: 5px;
-	padding: 9px 13px;
-	min-width: 120px;
+	background: var(--bg-3);
+	border: 1px solid var(--border-2);
+	border-radius: 6px;
+	padding: 10px 14px;
+	min-width: 130px;
 }
 .stat-box-label {
-	color: rgba(0,0,0,0.5);
-	font-size: 11px;
-	margin-bottom: 4px;
+	font-size: 10px;
+	color: var(--text-3);
+	margin-bottom: 5px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
-.stat-box-value {
-	font-size: 16px;
-	font-weight: bold;
-}
-.stat-box-value.positive { color: #1a9e5c; }
-.stat-box-value.negative { color: #d94040; }
+.stat-box-value { font-size: 18px; font-weight: bold; color: var(--text-1); }
+.stat-box-value.positive { color: var(--accent); }
+.stat-box-value.negative { color: var(--danger); }
 
 /* ============================================================
-   Dropdown Menu
+   Trading History
+   ============================================================ */
+.hist-wrap { flex: 1; overflow: auto; }
+.trading-history { border-collapse: collapse; width: 100%; font-size: 11px; }
+.trading-history th {
+	background: var(--bg-3);
+	color: var(--text-3);
+	padding: 5px 9px;
+	text-align: right;
+	border-bottom: 1px solid var(--border);
+	position: sticky;
+	top: 0;
+	font-weight: 500;
+	white-space: nowrap;
+}
+.trading-history th:first-child,
+.trading-history td:first-child { text-align: center; }
+.trading-history td {
+	padding: 4px 9px;
+	text-align: right;
+	border-bottom: 1px solid var(--border);
+	color: var(--text-2);
+	white-space: nowrap;
+}
+.trading-history tbody tr:hover td { background: var(--bg-3); }
+.td-buy      { color: var(--accent) !important; font-weight: 600; }
+.td-sell     { color: var(--danger) !important; font-weight: 600; }
+.td-positive { color: var(--accent) !important; }
+.td-negative { color: var(--danger) !important; }
+
+/* ============================================================
+   Status Bar
+   ============================================================ */
+.app-statusbar {
+	height: var(--statusbar-h);
+	background: var(--info);
+	display: flex;
+	align-items: center;
+	padding: 0 10px;
+	font-size: 10px;
+	color: rgba(255,255,255,0.9);
+	gap: 12px;
+	flex-shrink: 0;
+	user-select: none;
+}
+.statusbar-spacer { flex: 1; }
+
+/* ============================================================
+   Dropdown Menu (dark)
    ============================================================ */
 .dropdown-wrap {
 	position: fixed;
-	background: rgba(255,255,255,0.97);
-	border: 0.5px solid rgba(0,0,0,0.15);
-	border-radius: 7px;
-	box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+	background: var(--bg-3);
+	border: 1px solid var(--border-2);
+	border-radius: 6px;
+	box-shadow: 0 6px 20px rgba(0,0,0,0.5);
 	min-width: 180px;
 	padding: 4px 0;
 	z-index: 9999;
-	font-size: 13px;
+	font-size: 12px;
 }
 .dropdown-item {
-	padding: 6px 14px;
+	padding: 7px 14px;
 	cursor: pointer;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	color: rgba(0,0,0,0.8);
+	color: var(--text-2);
+	user-select: none;
 }
-.dropdown-item:hover {
-	background: rgba(0,0,0,0.06);
-}
-.dropdown-divider {
-	border-top: 0.5px solid rgba(0,0,0,0.1);
-	margin: 4px 0;
-}
-.dropdown-arrow {
-	color: rgba(0,0,0,0.4);
-	font-size: 15px;
-}
+.dropdown-item:hover { background: var(--bg-4); color: var(--text-1); }
+.dropdown-divider    { border-top: 1px solid var(--border); margin: 4px 0; }
+.dropdown-arrow      { color: var(--text-3); font-size: 13px; }
 .dropdown-sub {
 	position: fixed;
-	background: rgba(255,255,255,0.97);
-	border: 0.5px solid rgba(0,0,0,0.15);
-	border-radius: 7px;
-	box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+	background: var(--bg-3);
+	border: 1px solid var(--border-2);
+	border-radius: 6px;
+	box-shadow: 0 6px 20px rgba(0,0,0,0.5);
 	min-width: 160px;
 	padding: 4px 0;
 	z-index: 10000;
-	font-size: 13px;
+	font-size: 12px;
 }
-
-/* ============================================================
-   Trading History Table
-   ============================================================ */
-.trading-history {
-	border-collapse: collapse;
-	width: 100%;
-}
-.trading-history,
-.trading-history th,
-.trading-history td {
-	border: 1px solid #bbb;
-	padding: 3px 7px;
-}
-.trading-history tr > td {
-	border-radius: 7px;
-	text-align: right;
-}
-.trading-history thead > tr {
-	position: sticky;
-	top: 1px;
-}
-.trading-history tr > th {
-	background: #515151;
-	color: #f1f1f1;
-}
-.trading-history tr > th > div {
-	cursor: pointer;
-	display: flex;
-	gap: 5px;
-	justify-content: space-between;
-	pointer-events: none;
-}
-.trading-history tbody > tr.trade1 td {
-	pointer-events: none;
-}
-.trading-history tbody > tr.active1 {
-	background: #e1e1e1;
-}
-.td-buy  { color: #1a9e5c; }
-.td-sell { color: #d94040; }
-.td-positive { color: #1a9e5c; }
-.td-negative { color: #d94040; }

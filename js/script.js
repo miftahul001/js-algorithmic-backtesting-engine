@@ -3,10 +3,7 @@
 //======================================================================
 const BASE = 'https://raw.githubusercontent.com/miftahul001/js-algorithmic-backtesting-engine/main'
 const menuData = [
-	{
-		label: 'Load from disk',
-		file: null
-	},
+	{ label: 'Load from disk', file: null },
 	{ divider: true },
 	{
 		label: 'Indicators',
@@ -57,29 +54,19 @@ const closeDropdown = () => { dropdown?.remove(); dropdown = null }
 const buildDropdown = (anchorEl, codemirror) => {
 	closeDropdown()
 	dropdown = el({a:'div', b:document.body, d:{class:'dropdown-wrap'}})
-
 	const rect = anchorEl.getBoundingClientRect()
 	dropdown.style.top  = `${rect.bottom + 4}px`
 	dropdown.style.left = `${rect.left}px`
 
 	menuData.forEach(item => {
-
 		if (item.divider) {
-			el({a:'div', b:dropdown, d:{class:'dropdown-divider'}})
-			return
+			el({a:'div', b:dropdown, d:{class:'dropdown-divider'}}); return
 		}
-
 		if (!item.children) {
 			el({a:'div', b:dropdown, c:item.label, d:{class:'dropdown-item'}, e:{
-				click: () => {
-					closeDropdown()
-					fileInput.codemirror = codemirror
-					fileInput.button.click()
-				}
-			}})
-			return
+				click: () => { closeDropdown(); fileInput.codemirror = codemirror; fileInput.button.click() }
+			}}); return
 		}
-
 		const parent = el({a:'div', b:dropdown, d:{class:'dropdown-item'}, e:{
 			mouseenter: () => {
 				const sub = el({a:'div', b:parent, d:{class:'dropdown-sub'}})
@@ -87,28 +74,18 @@ const buildDropdown = (anchorEl, codemirror) => {
 				sub.style.top  = `${pr.top}px`
 				sub.style.left = `${pr.right - 3}px`
 				parent._sub = sub
-
 				item.children.forEach(child => {
 					el({a:'div', b:sub, c:child.label, d:{class:'dropdown-item'}, e:{
-						click: () => {
-							closeDropdown()
-							loadFromUrl(child.file, codemirror)
-						}
+						click: () => { closeDropdown(); loadFromUrl(child.file, codemirror) }
 					}})
 				})
 			},
-			mouseleave: () => {
-				parent._sub?.remove()
-				parent._sub = null
-			}
+			mouseleave: () => { parent._sub?.remove(); parent._sub = null }
 		}})
 		el({a:'span', b:parent, c:item.label})
 		el({a:'span', b:parent, c:'›', d:{class:'dropdown-arrow'}})
 	})
-
-	setTimeout(() => {
-		document.addEventListener('click', closeDropdown, {once: true})
-	}, 0)
+	setTimeout(() => { document.addEventListener('click', closeDropdown, {once: true}) }, 0)
 }
 //======================================================================
 // end of Script Loader
@@ -119,19 +96,16 @@ const buildDropdown = (anchorEl, codemirror) => {
 //======================================================================
 const fillStats = (parent, data) => {
 	parent.innerHTML = ''
-
+	const pnl = data.history.reduce((s, t) => s + t.pnl, 0)
 	const createBox = (label, value, colorClass = '') => {
 		const box = el({a:'div', b:parent, d:{class:'stat-box'}})
 		el({a:'div', b:box, c:label, d:{class:'stat-box-label'}})
 		el({a:'div', b:box, c:value, d:{class:`stat-box-value ${colorClass}`}})
 	}
-
-	const pnl = data.history.reduce((sum, t) => sum + t.pnl, 0)
-
 	createBox('Final Balance', `$${data.finalBalance.toFixed(2)}`)
-	createBox('Total P&L',     `${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`,  pnl >= 0 ? 'positive' : 'negative')
-	createBox('Win Rate',      data.winRate)
-	createBox('Total Trades',  data.history.length)
+	createBox('Total P&L',    `${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`, pnl >= 0 ? 'positive' : 'negative')
+	createBox('Win Rate',     data.winRate)
+	createBox('Total Trades', data.history.length)
 }
 //======================================================================
 // end of Trading Stats
@@ -142,22 +116,18 @@ const fillStats = (parent, data) => {
 //======================================================================
 const fillHist = (parent, data) => {
 	parent.innerHTML = ''
-	const table = el({a:'table', b:parent, d:{class:'trading-history'}})
-
-	const header = el({a:'tr', b:el({a:'thead', b:table})});
-	['No','Id','Side','Qty','Status','TP','SL',
-		'Entry Time','Entry Price','Exit Time','Exit Price',
-		'PnL','Gross PnL','Fee','Total','Reason','Comment'
+	const table  = el({a:'table', b:parent, d:{class:'trading-history'}})
+	const header = el({a:'tr', b:el({a:'thead', b:table})})
+	;['No','Id','Side','Qty','Status','TP','SL',
+	  'Entry Time','Entry Price','Exit Time','Exit Price',
+	  'PnL','Gross PnL','Fee','Total','Reason','Comment'
 	].forEach(h => el({a:'th', b:header, c:h}))
-	
+
 	const tbody = el({a:'tbody', b:table})
 	let total = 0
-	
 	data.forEach((t, i) => {
 		const tr = el({a:'tr', b:tbody})
-		const pnlColor = t.pnl >= 0 ? 'td-positive' : 'td-negative'
 		total += t.pnl
-
 		el({a:'td', b:tr, c:`${i + 1}`})
 		el({a:'td', b:tr, c:t.id})
 		el({a:'td', b:tr, c:t.side === 'BUY' ? '⮝' : t.side === 'SELL' ? '⮟' : '?',
@@ -170,10 +140,10 @@ const fillHist = (parent, data) => {
 		el({a:'td', b:tr, c:t.entryPrice})
 		el({a:'td', b:tr, c:t.exitTime ? new Date(t.exitTime).toISOString().replace('T',' ').slice(0,19) : '-'})
 		el({a:'td', b:tr, c:t.exitPrice ?? '-'})
-		el({a:'td', b:tr, c:t.pnl.toFixed(2),      d:{class:pnlColor}})
+		el({a:'td', b:tr, c:t.pnl.toFixed(2),     d:{class:t.pnl >= 0 ? 'td-positive' : 'td-negative'}})
 		el({a:'td', b:tr, c:t.grossPnL.toFixed(2)})
 		el({a:'td', b:tr, c:t.fee.toFixed(2)})
-		el({a:'td', b:tr, c:total.toFixed(2),        d:{class:total >= 0 ? 'td-positive' : 'td-negative'}})
+		el({a:'td', b:tr, c:total.toFixed(2),      d:{class:total >= 0 ? 'td-positive' : 'td-negative'}})
 		el({a:'td', b:tr, c:t.reason})
 		el({a:'td', b:tr, c:t.comment || '-'})
 	})
@@ -182,111 +152,105 @@ const fillHist = (parent, data) => {
 // end of Trading History
 //======================================================================
 
-const newEngine = a => {
+//======================================================================
+// Status Bar
+//======================================================================
+const setStatus = data => {
+	const pnl   = data.history.reduce((s, t) => s + t.pnl, 0)
+	const wins  = data.history.filter(t => t.pnl > 0).length
+	const total = data.history.length
+	const wr    = total > 0 ? ((wins / total) * 100).toFixed(1) : '0.0'
+	const sign  = pnl >= 0 ? '+' : ''
+	document.getElementById('status-summary').textContent =
+		`${total} trades · ${wr}% win · ${sign}$${pnl.toFixed(2)}`
+}
+//======================================================================
+// end of Status Bar
+//======================================================================
 
-	//==================================================================
-	// Result window
-	//==================================================================
-	const ct = dlg({title:''}).parentElement
-	ct.style = `top:${71 + (11*document.body.children.length)}px; left:${103 + (11*document.body.children.length)}px`
-	ct.className = 'pop1'
-	ct.children[0].style = ''
-	ct.children[0].textContent = ''
-	el({a:'div', b:ct.children[0]})
-	el({a:'div', b:ct.children[0], c:'Chart'})
-	el({a:'div', b:ct.children[0], d:{class:'fa fa-close'}, e:{click: b => ct.remove()}})
-	ct.children[1].remove()
-	ct.children[1].style = ''
-	el({a:'div', b:ct.children[1], d:{class:'result-toolbar'}})
-	el({a:'div', b:ct.children[1].children[0], d:{class:'result-toolbar-inner'}})
-	const iframe      = el({a:'iframe', b:el({a:'div', b:ct.children[1], d:{class:'result-panel'}})})
-	const tradingStat = el({a:'div', d:{class:'stats-wrap'}})
-	const tradingHist = el({a:'div'})
+//======================================================================
+// Run Engine
+//======================================================================
+const createPage = a =>
+`<!DOCTYPE html><html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backtesting Engine</title>
+<script src="js/echarts.min.js"></script>
+<script src="js/engine.js?v=001"></script>
+<script>
+let addChart, initBacktestEngine, sendOrder, modifyOrder, closeOrder
+`
++ a +
+`
+addEventListener('load', async () => {
+	let engine, currentCandle
+	const pendingCharts = []
 
-	// Tab bar
-	const tabBar = el({a:'div', b:ct.children[1].children[0].children[0], d:{class:'tab-bar'}})
-	const tabs = [
-		{label:'Chart',           panel: iframe      },
-		{label:'Trading Stats',   panel: tradingStat },
-		{label:'Trading History', panel: tradingHist },
-	]
-	const switchTab = tab => {
-		const lastActive = [...tabBar.children].find(t => t.classList.contains('active'))
-		if (lastActive === tab) return
-		lastActive.classList.remove('active')
-		tab.classList.add('active')
-		ct.children[1].children[1].children[0].remove()
-		ct.children[1].children[1].appendChild(tabs[+tab.getAttribute('data-index')].panel)
+	initBacktestEngine = (initialBalance = 1000, feePercent = 0, slippagePoint = 0) => {
+		engine = new BacktestEngine(initialBalance, feePercent, slippagePoint)
 	}
-	tabs.forEach((tab, i) => {
-		el({a:'div', b:tabBar, c:tab.label, d:{
-			class: i === 0 ? 'tab-nav active' : 'tab-nav',
-			'data-index': `${i}`,
-		}, e:{click: a => switchTab(a.target)}})
+	addChart    = params              => { if (engine) engine.addChart(params); else pendingCharts.push(params) }
+	sendOrder   = (side, qty, params) => { engine.sendOrder(side, currentCandle.c, qty, currentCandle.t, params) }
+	modifyOrder = (id, newTp, newSl)  => { engine.modifyOrder(id, newTp, newSl) }
+	closeOrder  = id                  => { engine.closeOrder(id, currentCandle.c, currentCandle.t) }
+
+	onInit()
+
+	if (!engine) engine = new BacktestEngine(1000, 0, 0)
+	pendingCharts.forEach(p => engine.addChart(p))
+	pendingCharts.length = 0
+
+	const data = await engine.loadData('data/30m/2025-01-01.json')
+	data.forEach(candle => {
+		engine.update(candle)
+		currentCandle = candle
+		onTick(candle)
 	})
 
-	iframe.onload = () => {
-		iframe.contentWindow.fillStats = data => {
-			fillStats(tradingStat, data)
-			fillHist(tradingHist, data.history)
-		}
-	}
-	ct.remove()
-	//==================================================================
-	// end of Result window
-	//==================================================================
+	const chart1 = echarts.init(document.getElementById('chart1'), 'dark')
+	chart1.setOption(engine.createChartOption())
+	fillStats(engine.getStats())
+})
+</script>
+</head><body style="display:flex; margin:0; padding:0; height:100vh;">
+<div id="chart1" style="flex:1 1 auto;"></div>
+</body>
+</html>`
+//======================================================================
+// end of Run Engine
+//======================================================================
 
-	//==================================================================
-	// Script window
-	//==================================================================
-	a = dlg({title:''}).parentElement
-	a.style = `top:${59 + (11*document.body.children.length)}px; left:${77 + (11*document.body.children.length)}px`
-	a.className = 'pop1'
-	a.children[0].style = ''
-	a.children[0].textContent = ''
-	el({a:'div', b:a.children[0], d:{class:'fa fa-caret-down'}, e:{click: b => {
-		((a,b,c) => a.contains(b) ? a.replace(b, c) : a.replace(c, b))(b.target.classList, 'fa-caret-down', 'fa-caret-right')
-		a.children[1].classList.toggle('hide')
-	}}})
-	el({a:'div', b:a.children[0], c:'Trading Sistem'})
-	el({a:'div', b:a.children[0], d:{class:'fa fa-close'}, e:{click: b => a.remove()}})
-	a.children[1].remove()
-	a.children[1].style = ''
+//======================================================================
+// Main Init
+//======================================================================
+addEventListener('load', () => {
 
-	const b = el({a:'div', b:a.children[1]})
-	el({a:'div', b:b})
-	el({a:'button', b:b.children[0], c:'data'})
-	el({a:'button', b:b.children[0], c:'Load Script', e:{
-		click: a => { a.stopPropagation(); buildDropdown(a.target, codemirror) }
-	}})
-
-	el({a:'div', b:b})
-	el({a:'div', b:b, c:'Run', e:{click: b => {
-		document.body.appendChild(ct)
-		iframe.srcdoc = createPage(codemirror.getValue())
-	}}})
-
-	const text = el({a:'textarea', b:el({a:'div', b:a.children[1]})})
-	text.value =
-`
-// place your variables here
+	//------------------------------------------------------------------
+	// CodeMirror
+	//------------------------------------------------------------------
+	const codemirror = CodeMirror.fromTextArea(
+		document.getElementById('editor-textarea'),
+		{ lineNumbers: true, mode: 'javascript', theme: 'dracula' }
+	)
+	codemirror.setValue(
+`// place your variables here
 
 const maPeriod = 14
 const maBuffer = []
-const maLine = []
+const maLine   = []
 let maSum = 0
 
-
 function onInit() {
-	//initBacktestEngine(initialBalance = 1000, feePercent = 0.5, slippagePoint = 0.5)
-	//initBacktestEngine(1000, 0.6, 0)
+	//initBacktestEngine(initialBalance, feePercent, slippagePoint)
+	//initBacktestEngine(1000, 0.05, 0)
 
 	addChart({
 		name: 'Moving Average',
 		type: 'line',
 		data: maLine,
 	})
-
 }
 
 function onTick(candle) {
@@ -303,63 +267,87 @@ function onTick(candle) {
 	//modifyOrder(orderId, newTp, newSl)
 	//closeOrder(id)
 }
-`
-	const codemirror = CodeMirror.fromTextArea(text, {lineNumbers: true, mode: 'javascript'})
-	el({a:'a', b:a.children[1], c:'powered by CodeMirror', d:{
-		href:'https://codemirror.net/',
-		style:'text-align:right; padding:0 21px;'
-	}})
-	//==================================================================
-	// end of Script window
-	//==================================================================
-}
+`)
 
-const createPage = a =>
-`<!DOCTYPE html><html><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Backtesting Engine</title>
-<link href="favicon.svg" rel="icon" sizes="any" type="image/svg+xml">
-<script src="js/echarts.min.js"></script>
-<script src="js/engine.js?v=001"></script>
-<script>
-let addChart, initBacktestEngine, sendOrder, modifyOrder, closeOrder
-`
-+ a +
-`
-addEventListener('load', async () => {
-	let engine, currentCandle
-	const pendingCharts = []
-	
-	initBacktestEngine = (initialBalance = 1000, feePercent = 0, slippagePoint = 0) => {
-		engine = new BacktestEngine(initialBalance, feePercent, slippagePoint)
+	//------------------------------------------------------------------
+	// DOM refs
+	//------------------------------------------------------------------
+	const iframe    = document.getElementById('result-iframe')
+	const statsWrap = document.getElementById('stats-wrap')
+	const histWrap  = document.getElementById('hist-wrap')
+
+	iframe.onload = () => {
+		iframe.contentWindow.fillStats = data => {
+			fillStats(statsWrap, data)
+			fillHist(histWrap, data.history)
+			setStatus(data)
+		}
 	}
-	addChart    = params         => { if (engine) engine.addChart(params); else pendingCharts.push(params) }
-	sendOrder   = (side, qty, params) => { engine.sendOrder(side, currentCandle.c, qty, currentCandle.t, params) }
-	modifyOrder = (id, newTp, newSl)  => { engine.modifyOrder(id, newTp, newSl) }
-	closeOrder  = id                  => { engine.closeOrder(id, currentCandle.c, currentCandle.t) }
-	
-	onInit()
-	
-	if (!engine) engine = new BacktestEngine(1000, 0, 0)
-	pendingCharts.forEach(p => engine.addChart(p))
-	pendingCharts.length = 0
-	
-	const data = await engine.loadData('data/30m/2025-01-01.json')
-	data.forEach(candle => {
-		engine.update(candle)
-		currentCandle = candle
-		onTick(candle)
+
+	//------------------------------------------------------------------
+	// Tab switching
+	//------------------------------------------------------------------
+	const rtabs   = [...document.querySelectorAll('.rtab')]
+	const rpanels = [...document.querySelectorAll('.rpanel')]
+	rtabs.forEach(tab => {
+		tab.addEventListener('click', () => {
+			const idx = +tab.getAttribute('data-index')
+			rtabs.forEach(t   => t.classList.remove('active'))
+			rpanels.forEach(p => p.classList.remove('active'))
+			tab.classList.add('active')
+			rpanels[idx].classList.add('active')
+		})
 	})
-	
-	const chart1 = echarts.init(document.getElementById('chart1'), 'dark')
-	chart1.setOption(engine.createChartOption())
-	fillStats(engine.getStats())
-	
+
+	//------------------------------------------------------------------
+	// Toolbar buttons
+	//------------------------------------------------------------------
+	document.getElementById('btn-load').addEventListener('click', e => {
+		e.stopPropagation()
+		buildDropdown(e.currentTarget, codemirror)
+	})
+
+	document.getElementById('btn-save').addEventListener('click', () => {
+		const blob = new Blob([codemirror.getValue()], {type: 'text/javascript'})
+		const url  = URL.createObjectURL(blob)
+		const a    = document.createElement('a')
+		a.href = url; a.download = 'strategy.js'; a.click()
+		URL.revokeObjectURL(url)
+	})
+
+	document.getElementById('btn-run').addEventListener('click', () => {
+		rtabs.forEach(t   => t.classList.remove('active'))
+		rpanels.forEach(p => p.classList.remove('active'))
+		rtabs[0].classList.add('active')
+		rpanels[0].classList.add('active')
+		iframe.srcdoc = createPage(codemirror.getValue())
+	})
+
+	//------------------------------------------------------------------
+	// Pane resizer
+	//------------------------------------------------------------------
+	const resizer    = document.getElementById('pane-resizer')
+	const editorPane = document.querySelector('.editor-pane')
+	const appMain    = document.querySelector('.app-main')
+
+	resizer.addEventListener('mousedown', e => {
+		e.preventDefault()
+		resizer.classList.add('dragging')
+		const onMove = e => {
+			const r   = appMain.getBoundingClientRect()
+			const pct = ((e.clientX - r.left) / r.width) * 100
+			if (pct > 15 && pct < 80) editorPane.style.width = `${pct}%`
+		}
+		const onUp = () => {
+			resizer.classList.remove('dragging')
+			document.removeEventListener('mousemove', onMove)
+			document.removeEventListener('mouseup', onUp)
+		}
+		document.addEventListener('mousemove', onMove)
+		document.addEventListener('mouseup', onUp)
+	})
+
 })
-</script>
-</head><body style="display:flex; margin:0; padding:0; height:100vh;">
-<div id="chart1" style="flex:1 1 auto;"></div>
-</body>
-</html>`
+//======================================================================
+// end of Main Init
+//======================================================================
