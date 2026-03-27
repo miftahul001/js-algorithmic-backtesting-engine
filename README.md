@@ -64,7 +64,7 @@ I am available for:
 * Data visualization & dashboard (ECharts)
 * Trading tools & backtesting systems
 
-📩 Contact: [miftahulmunir001@gmail.com](mailto:miftahulmunir001@gmail.com)
+📩 Contact: [miftahulmunir001@gmail.com](mailto:miftahulmunir001@gmail.com) 
 🔗 LinkedIn: https://www.linkedin.com/in/miftahul-munir-1530888b/
 
 ---
