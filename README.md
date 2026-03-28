@@ -1,8 +1,10 @@
 # 🚀 JS Algorithmic Backtesting Engine
 
+[![CI/CD Build](https://img.shields.io/github/actions/workflow/status/miftahul001/js-algorithmic-backtesting-engine/ci.yml?style=for-the-badge&label=CI/CD%20Build)](https://github.com/miftahul001/js-algorithmic-backtesting-engine/actions)
+[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge&logo=jest)](https://github.com/miftahul001/js-algorithmic-backtesting-engine/actions)
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Now-success?style=for-the-badge)](https://miftahul001.github.io/js-algorithmic-backtesting-engine/)
 [![JavaScript](https://img.shields.io/badge/Vanilla-JS-yellow?style=for-the-badge&logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Documentation](https://img.shields.io/badge/Docs-DOCUMENTATION.md-green)](https://github.com/miftahul001/js-algorithmic-backtesting-engine/blob/main/DOCUMENTATION.md)
+[![Documentation](https://img.shields.io/badge/Docs-DOCUMENTATION.md-green?style=for-the-badge)](https://github.com/miftahul001/js-algorithmic-backtesting-engine/blob/main/DOCUMENTATION.md)
 
 A lightweight, high-performance, in-browser algorithmic trading backtesting engine built entirely with Vanilla JavaScript. 
 
@@ -64,7 +66,7 @@ I am available for:
 * Data visualization & dashboard (ECharts)
 * Trading tools & backtesting systems
 
-📩 Contact: [miftahulmunir001@gmail.com](mailto:miftahulmunir001@gmail.com) 
+📩 Contact: [miftahulmunir001@gmail.com](mailto:miftahulmunir001@gmail.com)  
 🔗 LinkedIn: https://www.linkedin.com/in/miftahul-munir-1530888b/
 
 ---
