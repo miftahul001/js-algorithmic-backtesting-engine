@@ -1,0 +1,28 @@
+{
+	"name": "js-algorithmic-backtesting-engine",
+	"version": "1.0.0",
+	"description": "Browser-based algorithmic trading backtesting engine",
+	"main": "js/engine.js",
+	"scripts": {
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"test:coverage": "jest --coverage"
+	},
+	"devDependencies": {
+		"jest": "^29.7.0"
+	},
+	"jest": {
+		"testPathIgnorePatterns": [
+			"/node_modules/",
+			"/backup/"
+		]
+	},
+	"keywords": [
+		"backtesting",
+		"trading",
+		"cryptocurrency",
+		"javascript"
+	],
+	"author": "miftahul001",
+	"license": "MIT"
+}
