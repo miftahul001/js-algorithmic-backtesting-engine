@@ -280,6 +280,7 @@ addEventListener('load', async () => {
 	}
 	else {
 		const data = []
+		if (DATA_LOADER_STATE.int.length === 0) DATA_LOADER_STATE.int.push('2025-01-01')
 		const path = DATA_LOADER_STATE.int[0].length === 10 ? 'data/30m/' : DATA_LOADER_STATE.int[0].length === 7 ? 'data/1h/' : 'data/1d/'
 		for (const url of DATA_LOADER_STATE.int) {
 			data.push(...await engine.loadData(path+url+'.json'))
