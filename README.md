@@ -71,3 +71,33 @@ I am available for:
 
 ---
 
+
+## 🚀 Public Roadmap: Backtest Pro
+
+We are building a fully decentralized, private, and high-speed client-side computing ecosystem. Here is our development roadmap:
+
+### ✅ Phase 1: Core Engine Foundation (Completed)
+This phase focuses on building the foundational infrastructure without relying on heavy frameworks.
+	* **Vanilla JS State Management & Router:** Zero dependencies.
+	* **Local Storage Wrapper:** Engineered to store gigabytes of candlestick data directly in the browser.
+	* **Modular UI Architecture:** Powered by Vite's eager import for lightning-fast rendering.
+
+### ⏳ Phase 2: Freemium MVP (In Progress)
+The initial public release, allowing traders to perform essential backtesting for free.
+	* **Sliding Window Rendering:** Apache ECharts integration to visualize millions of data points with $O(1)$ space complexity.
+	* **Just-In-Time (JIT) API Sync:** Dynamic synchronization of Exchange configurations without slowing down the boot process.
+	* **Local File Chunking:** Securely process massive local CSV uploads without crashing the browser's RAM.
+	* **Limited Data Fetching (Free Tier):** Access to download historical crypto/stock market data with monthly request limits.
+	* **Internationalization (i18n):** Multi-language support with English as the default, and localization options (e.g., Indonesian).
+
+### 💎 Phase 3: Backtest Pro Version (Coming Soon)
+The premium tier designed for hardcore computation, live simulation, and deployment-ready automation.
+	* **Unlimited API Fetching:** Download decades of historical data directly from exchanges with zero limitations.
+	* **Multi-Threaded Execution:** Advanced Web Workers process technical indicators (RSI, MACD) in parallel background threads. This ensures the UI remains at a buttery-smooth 60 FPS while effortlessly running backtests across decades of data.
+	* **Custom Strategy Builder:** A built-in CodeMirror editor to write, test, and execute your custom algorithmic trading strategies in a secure, isolated sandbox.
+	* **Automated Data Seeding:** Instant sample data injection upon first launch for immediate simulation and testing.
+	* **Live Paper Trading (Forward Testing):** Seamlessly transition from historical backtesting to live market simulation. The engine connects to public Exchange WebSockets to test your strategy against real-time price movements without risking actual capital.
+	* **One-Click Bot Deployment:** Ready to go live? Export your proven strategy as a standalone, production-ready Node.js bundle. Deploy it directly to your own VPS for 24/7 automated trading, ensuring your private API keys never touch our servers.
+
+---
+💡 **Interested in the Pro Version?** The core execution engine is currently being built in stealth mode. Join our waitlist to get *Early Beta* access and exclusive launch offers.
